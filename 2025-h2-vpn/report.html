@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0" />
+      <link rel="icon" href="images/favicon.png" type="image/png" />
+    <title>構築レポート | Raspberry Pi 自宅VPNサーバ構築</title>
+    <link
+      rel="stylesheet"
+      href="css/style.css" />
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="sticky-wrapper">
+        <div class="header">
+          <h1>🖥️ Raspberry Pi 自宅VPNサーバ構築</h1>
+          <div class="subtitle">～ おうちネットワークに外から安全にアクセス！ ～</div>
+        </div>
+
+        <div class="nav-menu">
+          <a
+            href="index.html"
+            class="nav-item">
+            目標設定の背景
+          </a>
+          <a
+            href="report.html"
+            class="nav-item active">
+            構築レポート
+          </a>
+          <a
+            href="reflection.html"
+            class="nav-item">
+            課題と振り返り
+          </a>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="section">
+          <h2>📝 概要</h2>
+          <p>
+            本レポートは、Raspberry Pi を用いて自宅VPNサーバを構築した過程を記録したものです。 単なる手順の羅列ではなく、
+            <strong>「どこで躓き、どうすれば効率的だったか」</strong>
+            という試行錯誤のプロセスを中心にまとめています。
+          </p>
+          <p class="text-small">
+            ※ セキュリティ保護のため、IPアドレスやポート番号等の詳細は伏せて記載します。
+            <br />
+            ※ 実際の接続エビデンス（スクリーンショット等）は、別途提出のExcelに集約しています。
+          </p>
+        </div>
+
+        <div class="section">
+          <h2>🔧 構築手順と試行錯誤の記録</h2>
+
+          <h3>1. OSインストールとヘッドレス設定</h3>
+          <p>モニターやキーボードを接続せずにセットアップを行うため、OS書き込み段階（Raspberry Pi Imager）でSSHとWi-Fiの設定を事前に投入しました。</p>
+
+          <div class="alert-box info">
+            <span class="alert-title">💡 工夫した点：接続手段の二重化</span>
+            <p>本番は有線LANで運用しますが、初期設定時は念のためWi-Fi設定も行いました。 これは、ケーブル不良などで有線接続に失敗した場合でも、Wi-Fi経由でSSH接続して救済できるようにするためです。</p>
+          </div>
+
+          <h3>2. IPアドレスの固定化（ルーター側設定）</h3>
+          <p>
+            サーバとして稼働させるためにIPアドレスを固定する必要があります。 今回はRaspberry Pi側の設定ではなく、より確実な
+            <strong>「ルーターのDHCP固定割当機能」</strong>
+            を使用し、MACアドレスに対して常に同じIPが割り当てられるよう設定しました。
+          </p>
+          <p style="font-size: 12px; margin-top: 10px">
+            参考記事：
+            <a
+              href="https://qiita.com/mochi_2225/items/3abcc45db6378e7dbb17"
+              target="_blank">
+              Raspberry PiのIPアドレス固定は、Raspberry Pi側で設定 "しない" のが推奨らしい #RaspberryPi - Qiita
+            </a>
+          </p>
+
+          <h3>3. OpenVPNの導入</h3>
+          <p>インストーラー「PiVPN」を使用し、ウィザード形式でOpenVPNを導入しました。 この時点では後述するポートの問題に気づいていなかったため、設定（ポート番号など）はとりあえずデフォルト値（UDP 1194）のままで進めました。</p>
+            <div class="img-box">
+            <img src="images/pivpn_wizard.png" alt="PiVPNインストールウィザード画面" />
+            <p class="img-caption">▲ 対話形式のインストール画面</p>
+          </div>
+          <h3>4. 接続用ファイル（.ovpn）の生成</h3>
+
+          <p>インストール完了後、クライアント端末が接続するための「鍵ファイル（.ovpn）」を作成します。</p>
+
+          <div class="code-container">
+            <button
+              class="copy-btn"
+              onclick="copyCode(this)">
+              Copy
+            </button>
+            <pre><code class="language-bash">pivpn add</code></pre>
+          </div>
+          <p>
+            コマンドを実行してクライアント名（例：
+            <code>macbook</code>
+            ）を入力すると、以下の場所にファイルが生成されます。
+          </p>
+
+          <div class="code-container result-code">
+            <pre><code class="language-plaintext">/home/pi/ovpns/macbook.ovpn</code></pre>
+          </div>
+
+          <p class="text-small">
+            ※
+            <code>pi</code>
+            の部分には、Raspberry Pi OS インストール時に設定したユーザー名が入ります。
+          </p>
+
+          <p>このファイルには、「接続先のIPアドレス」や「ポート番号」、そして「暗号鍵」がすべて自動的に書き込まれています。 SCPコマンド等を使用して、これを手元のPCへダウンロードしました。</p>
+
+          <h3>5. ルーター側のポートマッピング設定</h3>
+          <p>
+            OpenVPN サーバを外部ネットワークから利用するためには、 自宅ルーターで
+            <strong>VPN 通信用ポートをRaspberry Piへ転送（ポートマッピング）</strong>
+            する必要があります。
+          </p>
+
+          <p>
+            ルーターの管理画面にログインし、「利用可能ポート一覧」を確認したところ、私の契約環境では OpenVPN のデフォルトポートである
+            <code>UDP 1194</code>
+            が割当範囲外であり、使用できないことが判明しました。
+          </p>
+
+          <div class="alert-box info">
+            <span class="alert-title">📌 環境依存の注意点</span>
+            <p>インターネット接続方式（IPv4 over IPv6 等）やプロバイダの仕様により、 利用可能なグローバルポート番号が限定されている場合があります。 このため、「任意のポートを自由に開放できる」とは限らない点に注意が必要です。</p>
+          </div>
+
+          <p>
+            そこで、ルーターの管理画面に表示されていた
+            <strong>割当範囲内の UDP ポート（xxxxx番）</strong>
+            を選定し、 以下の内容でポートマッピング設定を行いました。
+          </p>
+
+          <ul>
+            <li>
+              <strong>プロトコル：</strong>
+              UDP
+            </li>
+            <li>
+              <strong>外部ポート：</strong>
+              xxxxx
+              <span class="text-small">（ルーターの外側）</span>
+            </li>
+            <li>
+              <strong>転送先IP：</strong>
+              Raspberry Pi の固定IPアドレス
+            </li>
+            <li>
+              <strong>内部ポート：</strong>
+              xxxxx
+              <span class="text-small">（Raspberry Pi側もこのポートで待ち受け）</span>
+            </li>
+          </ul>
+
+          <p>
+            これにより、インターネット側から
+            <code>UDP xxxxx</code>
+            宛てに届いた通信が、 Raspberry Pi上の OpenVPN サーバへ転送される構成となりました。
+          </p>
+
+          <h3>6. クライアント設定（OpenVPN Connectへの鍵ファイル導入）</h3>
+          <p>クライアント端末にアプリ（OpenVPN Connect）をインストールしておきます。</p>
+          <p>
+            ダウンロードしておいた
+            <code>.ovpn</code>
+            鍵ファイルを OpenVPN Connect にインポートしますが、
+            <strong>この工程で設定内容の修正が必要となりました。</strong>
+          </p>
+
+          <div class="alert-box warning">
+            <span class="alert-title">⚠️ 躓いたポイント：ポート番号の不一致</span>
+            <p>
+              <strong>【起きたこと】</strong>
+              <br />
+              生成された鍵ファイルには、インストール時に指定したデフォルトのポート
+              <code>1194</code>
+              が記載されていました。 しかし、前項の通りルーター側では
+              <code>1194</code>
+              が開放できず、
+              <code>xxxxx</code>
+              で設定しています。
+            </p>
+            <p>
+              <strong>【対応】</strong>
+              <br />
+              テキストエディタで
+              <code>.ovpn</code>
+              ファイルを開き、ポート番号を
+              <code>1194</code>
+              から
+              <code>xxxxx</code>
+              に書き換えてからインポートしました。
+            </p>
+            <p>
+              <strong>【振り返り（最短ルート）】</strong>
+              <br />
+              もし、
+              <strong>PiVPNのインストールを行う前にルーターの空きポートを確認し、ウィザード画面でその番号（xxxxx）を入力していれば</strong>
+              、 生成されるファイルには最初から正しい情報が記載され、この修正作業は不要でした。
+              <br />
+              AIに言われるがままの手順ではなく、まず全体の手順や前提条件を整理したうえで作業を進める重要性を学びました。
+            </p>
+          </div>
+
+          <h3>7. 「ヘアピンNAT（NATループバック）」問題の解決</h3>
+
+          <p>修正したファイルをインポートし、MacBookから接続スイッチをONにしましたが、最初は接続タイムアウトのエラーが発生しました。</p>
+
+          <div class="code-container">
+            <pre><code class="language-plaintext">Server poll timeout, trying next remote entry...</code></pre>
+          </div>
+
+          <div class="alert-box warning">
+            <span class="alert-title">⚠️ 躓いたポイント：自宅から繋がらない</span>
+            <p>
+              <strong>【原因】</strong>
+              <br />
+              自宅のWi-Fiに繋いだまま（LAN内部から）、自宅のグローバルIP（外側の住所）へアクセスしようとしたため、ルーターの仕様により通信が破棄されていました（ヘアピンNAT非対応）。
+            </p>
+            <p>
+              <strong>【対応】</strong>
+              <br />
+              iPhoneのテザリング機能を使用し、MacBookを
+              <strong>「外部ネットワーク（携帯回線）」</strong>
+              に接続した状態で再試行しました。 この切り分けを行った結果、無事にVPN接続が確立（CONNECTED）することを確認しました。
+            </p>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>✅ 構築完了</h2>
+          <p>以上の手順を経て、外部ネットワークから自宅へ安全に接続できる環境が整いました。 特に「ルーターのポート制限」や「NATループバック」の問題は、座学だけでは気づきにくいポイントであり、実際に手を動かしたからこそ得られた知見です。</p>
+          <p>今回の作業を通じて、AIの提示する手順をそのままなぞるのではなく、 全体の構成や前提条件を整理したうえで作業を進めることの重要性を改めて認識しました。</p>
+        </div>
+        <div class="nav-next">
+          <a
+            href="reflection.html"
+            class="link-btn">
+            👉 課題と振り返りへ進む
+          </a>
+        </div>
+      </div>
+      <div class="footer">
+        <p>
+          📅 最終更新: 2026年1月 | 
+          <img src="images/favicon.png" alt="icon" style="width: 20px; vertical-align: middle; margin-bottom: 4px; margin-right: 2px;"> 
+          製作者: kato
+        </p>
+      </div>
+    </div>
+
+    <script>
+      // highlight.js が読み込まれている場合のみ実行
+      if (typeof hljs !== 'undefined') {
+        hljs.highlightAll();
+      }
+
+      function copyCode(button) {
+        const codeBlock = button.nextElementSibling.querySelector('code');
+        const text = codeBlock.textContent;
+
+        navigator.clipboard.writeText(text).then(() => {
+          const originalText = button.textContent;
+
+          button.textContent = 'Copied!';
+          button.style.background = '#ffff00';
+          button.style.color = '#000000';
+
+          setTimeout(() => {
+            button.textContent = originalText;
+            button.style.background = '#c0c0c0';
+            button.style.color = '#000000';
+          }, 1500);
+        });
+      }
+    </script>
+  </body>
+</html>

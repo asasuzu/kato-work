@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>コード譜PDFエディタ</title>
+  <link rel="icon" type="image/png" href="./favicon.png">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="app-header no-print">
+    <div>
+      <h1>コード譜PDFエディタ</h1>
+      <p>スペースでコード位置を調整して、PDFで崩れにくく出力できます</p>
+    </div>
+  </header>
+
+  <main class="app-layout">
+    <section class="panel no-print">
+      <h2>基本情報</h2>
+
+      <label class="field">
+        <span>曲名</span>
+        <input id="titleInput" type="text" placeholder="例：かえるの歌" />
+      </label>
+
+      <label class="field">
+        <span>曲のキー</span>
+        <select id="songKeyInput">
+          <option selected>C</option>
+          <option>C#</option>
+          <option>Db</option>
+          <option>D</option>
+          <option>D#</option>
+          <option>Eb</option>
+          <option>E</option>
+          <option>F</option>
+          <option>F#</option>
+          <option>Gb</option>
+          <option>G</option>
+          <option>G#</option>
+          <option>Ab</option>
+          <option>A</option>
+          <option>A#</option>
+          <option>Bb</option>
+          <option>B</option>
+        </select>
+      </label>
+
+      <div class="mode-switch">
+        <button id="textModeBtn" class="active" type="button">一括テキストモード</button>
+        <button id="blockModeBtn" type="button">ブロック編集モード</button>
+      </div>
+
+      <section id="textEditorArea">
+        <h2>一括テキスト</h2>
+        <p class="help">
+          ルール：コード行 → 歌詞行 → 空行 → コード行 → 歌詞行
+        </p>
+
+        <textarea id="bulkTextInput" spellcheck="false"></textarea>
+
+        <div class="button-row">
+          <button id="formatTextBtn" type="button">整形する</button>
+          <button id="applyBulkBtn" type="button">プレビューに反映</button>
+        </div>
+      </section>
+
+      <section id="blockEditorArea" class="hidden">
+        <h2>ブロック編集</h2>
+        <p class="help">
+          1ブロック = コード行 + 歌詞行
+        </p>
+
+        <div id="blocksContainer"></div>
+
+        <div class="button-row">
+          <button id="addBlockBtn" type="button">行を追加</button>
+          <button id="applyBlocksBtn" type="button">プレビューに反映</button>
+        </div>
+      </section>
+    </section>
+
+    <section class="panel no-print">
+      <h2>プレビュー設定</h2>
+
+      <label class="check-field">
+        <input id="transposePreviewInput" type="checkbox" />
+        <span>プレビューでキー変更する</span>
+      </label>
+
+      <label class="field">
+        <span>プレビューキー</span>
+        <select id="previewKeyInput">
+          <option selected>C</option>
+          <option>C#</option>
+          <option>Db</option>
+          <option>D</option>
+          <option>D#</option>
+          <option>Eb</option>
+          <option>E</option>
+          <option>F</option>
+          <option>F#</option>
+          <option>Gb</option>
+          <option>G</option>
+          <option>G#</option>
+          <option>Ab</option>
+          <option>A</option>
+          <option>A#</option>
+          <option>Bb</option>
+          <option>B</option>
+        </select>
+      </label>
+
+      <label class="check-field">
+        <input id="showDegreeInput" type="checkbox" checked />
+        <span>ディグリー表記を表示する</span>
+      </label>
+
+      <div class="button-row">
+        <button id="applyTransposeBtn" type="button" class="danger-button">元データにもキー変更を適用</button>
+      </div>
+
+      <p class="help">
+        通常のキー変更はプレビューと印刷だけに反映されます。元データを書き換える場合だけ上のボタンを使います。
+      </p>
+
+      <h2>印刷設定</h2>
+
+      <label class="field">
+        <span>印刷レイアウト</span>
+        <select id="printLayoutInput">
+          <option value="a4-portrait" selected>A4縦 1枚</option>
+          <option value="a3-landscape-2up">A3横 左右2面付け</option>
+        </select>
+      </label>
+
+      <p class="help">
+        印刷はChromeを推奨します。特に「A3横 左右2面付け」は、SafariやFirefoxでは用紙サイズの指定が効かず、レイアウトが崩れることがあります。
+      </p>
+
+      <label class="field">
+        <span>ページ余白：<strong id="pageMarginValue">12</strong>mm</span>
+        <input id="pageMarginInput" type="range" min="4" max="30" value="12" />
+      </label>
+
+      <label class="field">
+        <span>フォントサイズ：<strong id="fontSizeValue">16</strong>px</span>
+        <input id="fontSizeInput" type="range" min="10" max="28" value="16" />
+      </label>
+
+      <label class="field">
+        <span>コードと歌詞の間隔：<strong id="chordLyricGapValue">2</strong>px</span>
+        <input id="chordLyricGapInput" type="range" min="0" max="20" value="2" />
+      </label>
+
+      <label class="field">
+        <span>ブロック間隔：<strong id="blockGapValue">18</strong>px</span>
+        <input id="blockGapInput" type="range" min="0" max="50" value="18" />
+      </label>
+
+      <label class="field">
+        <span>文字間隔：<strong id="letterSpacingValue">0</strong>px</span>
+        <input id="letterSpacingInput" type="range" min="-1" max="4" step="0.1" value="0" />
+      </label>
+
+      <h2>保存・出力</h2>
+
+      <div class="button-column">
+        <button id="exportBtn" type="button">JSONを書き出す</button>
+
+        <label class="file-button">
+          JSONを読み込む
+          <input id="importInput" type="file" accept="application/json,.json" />
+        </label>
+
+        <button id="printBtn" type="button" class="primary">印刷 / PDF保存</button>
+      </div>
+
+      <p class="help">
+        入力内容はlocalStorageに自動保存されます。正式な保存はJSON書き出しがおすすめです。
+      </p>
+    </section>
+
+    <section class="preview-wrapper">
+      <div class="preview-toolbar no-print">
+        <h2>プレビュー</h2>
+      </div>
+
+      <article id="printArea" class="print-area print-area-a4"></article>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

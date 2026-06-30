@@ -1,0 +1,28 @@
+* text=auto
+.gitattributes text eol=lf
+
+# Web and documentation files
+*.html text eol=lf
+*.css  text eol=lf
+*.js   text eol=lf
+*.md   text eol=lf
+
+# Swift / Xcode project files
+*.swift               text eol=lf
+*.plist               text eol=lf
+*.entitlements        text eol=lf
+*.pbxproj             text eol=lf
+*.xcworkspacedata     text eol=lf
+
+# Structured text assets
+*.json text eol=lf
+
+# Binary assets
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.ico  binary
+*.pdf  binary
+*.mp4  binary
+*.mov  binary

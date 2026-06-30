@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0" />
+      <link rel="icon" href="images/favicon.png" type="image/png" />
+    <title>課題と振り返り | Raspberry Pi 自宅VPNサーバ構築</title>
+    <link
+      rel="stylesheet"
+      href="css/style.css" />
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="sticky-wrapper">
+        <div class="header">
+          <h1>🖥️ Raspberry Pi 自宅VPNサーバ構築</h1>
+          <div class="subtitle">～ おうちネットワークに外から安全にアクセス！ ～</div>
+        </div>
+
+        <div class="nav-menu">
+          <a
+            href="index.html"
+            class="nav-item">
+            目標設定の背景
+          </a>
+          <a
+            href="report.html"
+            class="nav-item">
+            構築レポート
+          </a>
+          <a
+            href="reflection.html"
+            class="nav-item active">
+            課題と振り返り
+          </a>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="section">
+          <h2>🚧 今回の構成で残った課題</h2>
+          <p>今回は、DDNS（Dynamic DNS）の設定まで行うことができませんでした。そのため、自宅回線のグローバルIPアドレスが変更された場合、VPNクライアント側の接続先情報を手動で更新する必要があります。</p>
+          <p>短時間の検証用途としては問題ありませんが、常用や長期運用を前提とする場合には、運用面での課題として残っています。</p>
+        </div>
+
+        <div class="section">
+          <h2>⚖️ 技術選定に関する今後の検討</h2>
+
+          <p>
+            本検証では、VPN構築のデファクトスタンダードであり、技術情報やトラブルシューティング事例が豊富な
+            <strong>OpenVPN</strong>
+            を採用しました。
+          </p>
+          <p>
+            一方で、近年ではより軽量で高速な
+            <strong>WireGuard</strong>
+            というVPNプロトコルも普及しています。 今回は安定性を重視してOpenVPNを選定しましたが、今後はWireGuardを用いた構築も行い、設定の容易さや通信速度の違いなどを比較検証してみたいと考えています。
+          </p>
+        </div>
+
+        <div class="section">
+          <h2>💭 全体を通した振り返り</h2>
+          <p>当初は、AIが提示する手順に従えば比較的容易に構築できると考えていましたが、 実際にはネットワーク環境やルーターの仕様差分などにより、 想定通りに進まない場面が多くありました。</p>
+          <p>一方で、単に手順をなぞるのではなく、 「なぜ接続できないのか」「どこで通信が遮断されているのか」を考えながら 切り分けを行う経験は、理解を深めるうえで有意義だったと感じています。</p>
+        </div>
+
+        <div class="section">
+          <h2>🚀 今後に向けて</h2>
+          <p>今回の取り組みを通して、VPNの仕組みや自宅ネットワーク構成について、 実体験を伴って理解することができました。</p>
+          <p>今後は、DDNSの導入や別方式のVPN検証などを通じて、 より実用性の高い構成を検討していきたいと考えています。</p>
+        </div>
+        <div class="nav-next">
+          <a
+            href="index.html"
+            class="link-btn">
+            🏠 トップページへ戻る
+          </a>
+        </div>
+      </div>
+
+      <div class="footer">
+        <p>
+          📅 最終更新: 2026年1月 | 
+          <img src="images/favicon.png" alt="icon" style="width: 20px; vertical-align: middle; margin-bottom: 4px; margin-right: 2px;"> 
+          製作者: kato
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

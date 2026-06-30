@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0" />
+      <link rel="icon" href="images/favicon.png" type="image/png" />
+    <title>目標設定の背景 | Raspberry Pi 自宅VPNサーバ構築</title>
+    <link
+      rel="stylesheet"
+      href="css/style.css" />
+    <style>
+      /* テーブル用の簡易スタイル */
+      .spec-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+      }
+      .spec-table th,
+      .spec-table td {
+        border: 1px solid #ccc;
+        padding: 8px;
+        text-align: left;
+      }
+      .spec-table th {
+        background-color: #f0f0f0;
+        width: 30%;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="sticky-wrapper">
+        <div class="header">
+          <h1>🖥️ Raspberry Pi 自宅VPNサーバ構築</h1>
+          <div class="subtitle">～ おうちネットワークに外から安全にアクセス！ ～</div>
+        </div>
+
+        <div class="nav-menu">
+          <a
+            href="index.html"
+            class="nav-item active">
+            目標設定の背景
+          </a>
+          <a
+            href="report.html"
+            class="nav-item">
+            構築レポート
+          </a>
+          <a
+            href="reflection.html"
+            class="nav-item">
+            課題と振り返り
+          </a>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="section">
+          <h2>🎯 目標設定について</h2>
+          <p>
+            2025年度下期の任意設定目標として、
+            <strong>「自宅にVPNサーバを構築する」</strong>
+            を設定しました。
+          </p>
+          <p>クラウドやSaaSを利用する機会が増える中、足回りの技術（TCP/IP、VPN、Linuxサーバ管理）を改めて基礎から実践形式で学び直し、技術者としての対応幅を広げることを目的としています。</p>
+          <div class="alert-box info">
+            <span class="alert-title">本目標の達成要件（ゴール）</span>
+            <ul>
+              <li>
+                <strong>実装：</strong>
+                自宅にVPNサーバを構築し、外部からの接続を確立させる。
+              </li>
+              <li>
+                <strong>理解：</strong>
+                ポート開放やプロトコル等の仕組みを理解し、トラブルシューティングを行う。
+              </li>
+              <li>
+                <strong>活用：</strong>
+                実際にPCやスマートフォンから実用的に利用できる状態にする。
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>🤔 なぜ「VPN構築」を選んだのか</h2>
+          <p>学習テーマとしてVPNを選定した背景には、日常的なセキュリティ課題への関心がありました。</p>
+          <p>
+            カフェや移動中のフリーWi-Fi利用時に表示される「セキュリティ警告」に対し、漠然とした不安を感じるだけでなく、
+            <strong>「自分で安全な通信経路（トンネル）を確保できるエンジニアになりたい」</strong>
+            と考えたことがきっかけです。
+          </p>
+        </div>
+
+        <div class="section">
+          <h2>⚙️ 検証環境・使用機材</h2>
+          <p>常時稼働とLinux操作の習得を兼ねて、Raspberry Pi を採用しました。</p>
+          <table class="spec-table">
+            <tr>
+              <th>サーバー筐体</th>
+              <td>Raspberry Pi 4 Model B (4GB RAM)</td>
+            </tr>
+            <tr>
+              <th>OS</th>
+              <td>Raspberry Pi OS Lite (64-bit)</td>
+            </tr>
+            <tr>
+              <th>VPNソフト</th>
+              <td>OpenVPN (PiVPN)</td>
+            </tr>
+            <tr>
+              <th>学習要素</th>
+              <td>Linuxコマンド (CUI), SSH, ポートマッピング, 公開鍵認証</td>
+            </tr>
+            <tr>
+              <th>クライアント</th>
+              <td>MacBook Air (macOS), iPhone (iOS)</td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="nav-next">
+          <a
+            href="report.html"
+            class="link-btn">
+            👉 構築レポートへ進む
+          </a>
+        </div>
+      </div>
+
+      <div class="footer">
+        <p>
+          📅 最終更新: 2026年1月 | 
+          <img src="images/favicon.png" alt="icon" style="width: 20px; vertical-align: middle; margin-bottom: 4px; margin-right: 2px;"> 
+          製作者: kato
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

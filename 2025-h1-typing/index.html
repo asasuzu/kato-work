@@ -1,0 +1,117 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>概要</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      font-size: 11.7px;
+    }
+    nav {
+      background-color: #004466;
+      padding: 10px;
+      color: white;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin-right: 15px;
+      font-weight: bold;
+      font-size: 11.7px;
+    }
+	.container {
+	  padding: 20px;
+	  max-width: 800px;        /* 最大幅を設定 */
+	  margin: 0 auto;          /* 中央寄せ */
+	}
+    h2 {
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 4px;
+      margin-top: 24px;
+      font-size: 14px;
+    }
+    p {
+      margin: 8px 0 12px 0;
+    }
+    dl {
+      margin-left: 20px;
+    }
+    dt {
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    dd {
+      margin-left: 0;
+      margin-bottom: 8px;
+    }
+    img.sample {
+      display: block;
+      margin: 10px auto;
+      width: 60%;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html">概要</a>
+  <a href="data.html">一覧</a>
+  <a href="graph.html">グラフ</a>
+
+</nav>
+
+<div class="container">
+	<h2>1. 本サイトの目的</h2>
+	<p>
+	  本サイトは、2025年上半期の個人目標である<br>
+	  「タイピング練習サイト『e-typing』にて、週5回の腕試しレベルチェックを実施し、そのスコアをグラフ化して提出する」<br>
+	  という取り組みに関連し、<strong>練習結果の証跡（スクリーンショット）の提示およびその見方を補足する目的</strong>で作成いたしました。<br><br>
+
+	  以下の内容をご確認いただけます。<br>
+	  ・各回の練習結果を記録した<a href="data.html">スクリーンショット一覧</a><br>
+	  ・練習実績のスコア推移を可視化した<a href="graph.html">グラフ</a><br><br>
+
+
+	  なお、週5回以上の実施状況および判定結果については、<br>
+	  別添のExcelファイルをご確認ください。
+	</p>
+
+	<h2>2. 「e-typing」を選んだ理由</h2>
+	<p>
+	  タイピング練習には、タイピング練習サイト「e-typing」内の<br>
+	  「腕試しレベルチェック」を使用しました。<br><br>
+
+	  こちらは国内のタイピング競技大会（例：REALFORCE TYPING CHAMPIONSHIP）や、<br>
+	  企業の採用試験などでも活用されており、スコアの客観性と汎用性の高さが評価されています。<br>
+	  そのため、個人の練習成果を記録・比較するツールとして適切であると判断しました。
+	</p>
+
+
+  <h2>3. タイピング結果の各項目の説明</h2>
+  <img src="images/sample.png" alt="証跡画像の例" class="sample">
+  <dl>
+    <dt>①スコア</dt>
+    <dd>WPM × 正解率の3乗で算出されるe-typing独自の指標</dd>
+    <dt>②レベル</dt>
+    <dd>スコアに応じて表示される習熟度</dd>
+    <dt>③入力時間</dt>
+    <dd>15問すべてを入力するのにかかった時間（問題は日によって異なるため参考程度）</dd>
+    <dt>④入力文字数</dt>
+    <dd>入力したキーの総数（ミスキー含む）</dd>
+    <dt>⑤ミス入力数</dt>
+    <dd>間違えて入力したキーの数</dd>
+    <dt>⑥WPM</dt>
+    <dd>1分間あたりの入力文字数（Words Per Minute）</dd>
+    <dt>⑦正解率（%）</dt>
+    <dd>ミスの割合をもとに算出（入力文字数とミスの比率）</dd>
+    <dt>⑧苦手キー</dt>
+    <dd>ミスの多いキー上位5つを自動抽出</dd>
+  </dl>
+
+</body>
+</html>

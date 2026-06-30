@@ -1,0 +1,588 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #faf8f4;
+  --card: #ffffff;
+  --text: #3a3a3a;
+  --muted: #8a8378;
+  --border: #e5dfd4;
+  --accent: #c96f4a;
+  --danger: #c0392b;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  color: var(--text);
+  background: var(--bg);
+}
+
+button {
+  font: inherit;
+}
+
+.app {
+  width: min(720px, 100%);
+  margin: 0 auto;
+  padding: 40px 16px 64px;
+}
+
+.hero {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 8px;
+  font-size: 1.8rem;
+}
+
+.lead {
+  margin: 0 auto;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+.game-card,
+.result-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.result-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.game-card {
+  margin-bottom: 20px;
+}
+
+.canvas-header {
+  margin-bottom: 16px;
+}
+
+.canvas-header h2 {
+  margin-bottom: 4px;
+  font-size: 1.2rem;
+}
+
+.canvas-header p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+  font-size: 0.92rem;
+}
+
+.cut-counter {
+  width: fit-content;
+  padding: 6px 12px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.88rem;
+  white-space: nowrap;
+}
+
+.cut-counter span {
+  color: var(--muted);
+}
+
+.cut-counter strong {
+  color: var(--text);
+}
+
+.canvas-wrap {
+  position: relative;
+  width: min(100%, 560px);
+  margin: 0 auto;
+}
+
+.canvas-cut-counter {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+#cakeCanvas {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  display: block;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fffdf9;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: crosshair;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.primary-button,
+.secondary-button {
+  min-height: 44px;
+  padding: 0 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.primary-button {
+  color: #fff;
+  background: var(--accent);
+  border: none;
+}
+
+.primary-button:hover {
+  background: #b65f3c;
+}
+
+.secondary-button {
+  color: var(--text);
+  background: var(--card);
+  border: 1px solid var(--border);
+}
+
+.secondary-button:hover {
+  background: #f5f1ea;
+}
+
+.hint {
+  margin: 14px 0 0;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.7;
+  font-size: 0.88rem;
+}
+
+.hidden {
+  display: none;
+}
+
+.result-title-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.result-title-row h2 {
+  margin-bottom: 0;
+  font-size: 1.2rem;
+}
+
+.rank-badge {
+  min-width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  color: var(--accent);
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.perfect-celebration {
+  display: none;
+}
+
+.result-card.perfect {
+  border-color: #f6bd16;
+  padding-top: 78px;
+  background:
+    radial-gradient(circle at 18% 14%, rgba(255, 89, 94, 0.22), transparent 24%),
+    radial-gradient(circle at 82% 10%, rgba(25, 130, 196, 0.22), transparent 26%),
+    radial-gradient(circle at 50% 0%, rgba(255, 202, 58, 0.34), transparent 32%),
+    #ffffff;
+  box-shadow:
+    0 0 0 3px rgba(246, 189, 22, 0.18),
+    0 20px 48px rgba(201, 111, 74, 0.28);
+  animation: perfect-pop 720ms ease-out both;
+}
+
+.result-card.perfect::before,
+.result-card.perfect::after {
+  content: "";
+  position: absolute;
+  inset: -28%;
+  pointer-events: none;
+}
+
+.result-card.perfect::before {
+  background:
+    repeating-conic-gradient(
+      from 8deg,
+      rgba(255, 89, 94, 0) 0 8deg,
+      rgba(255, 89, 94, 0.35) 9deg 11deg,
+      rgba(25, 130, 196, 0) 12deg 24deg,
+      rgba(25, 130, 196, 0.32) 25deg 27deg,
+      rgba(138, 201, 38, 0) 28deg 40deg,
+      rgba(138, 201, 38, 0.3) 41deg 43deg
+    );
+  mix-blend-mode: multiply;
+  opacity: 0.5;
+  animation: perfect-rays 4s linear infinite;
+}
+
+.result-card.perfect::after {
+  background:
+    radial-gradient(circle, rgba(255, 255, 255, 0.92) 0 2px, transparent 3px) 8% 12% / 82px 82px,
+    radial-gradient(circle, rgba(255, 202, 58, 0.9) 0 3px, transparent 4px) 34% 6% / 98px 98px,
+    radial-gradient(circle, rgba(25, 130, 196, 0.75) 0 2px, transparent 3px) 72% 16% / 76px 76px;
+  opacity: 0.78;
+  animation: perfect-sparkle 1.6s ease-in-out infinite;
+}
+
+.result-card.perfect .perfect-celebration {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  pointer-events: none;
+}
+
+.result-card.perfect .result-title-row,
+.result-card.perfect .score-grid,
+.result-card.perfect .area-list-wrap,
+.result-card.perfect .comment {
+  position: relative;
+  z-index: 1;
+}
+
+.perfect-burst {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-3deg);
+  padding: 6px 14px;
+  color: #ffffff;
+  background: linear-gradient(90deg, #ff595e, #ffca3a, #8ac926, #1982c4);
+  border: 3px solid #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 8px 18px rgba(58, 58, 58, 0.22);
+  font-size: clamp(1.1rem, 5vw, 2.1rem);
+  font-weight: 900;
+  line-height: 1;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.16);
+  animation: perfect-burst 900ms cubic-bezier(0.2, 1.25, 0.3, 1) both;
+}
+
+.result-card.perfect .rank-badge {
+  color: #ffffff;
+  background: linear-gradient(135deg, #ff595e, #ffca3a 52%, #1982c4);
+  border-color: #ffffff;
+  box-shadow:
+    0 0 0 4px rgba(255, 202, 58, 0.35),
+    0 0 24px rgba(255, 202, 58, 0.72);
+  animation: perfect-badge 1s ease-in-out infinite alternate;
+}
+
+.result-card.perfect .score-box {
+  background: rgba(255, 255, 255, 0.82);
+  border-color: rgba(246, 189, 22, 0.48);
+}
+
+.result-card.perfect .comment {
+  color: #4a2c00;
+  background: rgba(255, 247, 214, 0.94);
+  border: 1px solid rgba(246, 189, 22, 0.55);
+  font-weight: 700;
+}
+
+.confetti {
+  position: absolute;
+  top: -18px;
+  width: 10px;
+  height: 18px;
+  border-radius: 2px;
+  opacity: 0;
+  animation: confetti-fall 1.45s ease-out infinite;
+}
+
+.c1 {
+  left: 9%;
+  background: #ff595e;
+  animation-delay: 0ms;
+}
+
+.c2 {
+  left: 22%;
+  background: #ffca3a;
+  animation-delay: 130ms;
+}
+
+.c3 {
+  left: 35%;
+  background: #8ac926;
+  animation-delay: 260ms;
+}
+
+.c4 {
+  left: 48%;
+  background: #1982c4;
+  animation-delay: 80ms;
+}
+
+.c5 {
+  left: 61%;
+  background: #6a4c93;
+  animation-delay: 210ms;
+}
+
+.c6 {
+  left: 74%;
+  background: #ff924c;
+  animation-delay: 340ms;
+}
+
+.c7 {
+  left: 86%;
+  background: #00bbf9;
+  animation-delay: 160ms;
+}
+
+.c8 {
+  left: 95%;
+  background: #f15bb5;
+  animation-delay: 300ms;
+}
+
+.score-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.score-box {
+  padding: 14px 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.score-label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.score-box strong {
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.score-box.danger strong {
+  color: var(--danger);
+}
+
+.area-list-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.area-list-title-row h3 {
+  margin-bottom: 0;
+  font-size: 1rem;
+}
+
+.area-list-title-row p {
+  margin-bottom: 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.area-list {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.area-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 4px;
+  border-bottom: 1px solid var(--border);
+  line-height: 1.5;
+}
+
+.area-list li:last-child {
+  border-bottom: none;
+}
+
+.area-number {
+  width: 26px;
+  height: 26px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: #333;
+  border-radius: 50%;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.area-percent {
+  margin-left: auto;
+  font-weight: 600;
+}
+
+.comment {
+  margin: 16px 0 0;
+  padding: 12px 14px;
+  background: #faf6ee;
+  border-radius: 8px;
+  line-height: 1.7;
+}
+
+.comment.danger {
+  color: #8c2f23;
+  background: #fdf0ee;
+}
+
+@keyframes perfect-pop {
+  0% {
+    transform: scale(0.96);
+  }
+
+  55% {
+    transform: scale(1.02);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes perfect-rays {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes perfect-sparkle {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.45;
+  }
+
+  50% {
+    transform: scale(1.04);
+    opacity: 0.92;
+  }
+}
+
+@keyframes perfect-burst {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-18px) scale(0.55) rotate(-9deg);
+  }
+
+  62% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1.14) rotate(2deg);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1) rotate(-3deg);
+  }
+}
+
+@keyframes perfect-badge {
+  from {
+    transform: rotate(-4deg) scale(1);
+  }
+
+  to {
+    transform: rotate(4deg) scale(1.1);
+  }
+}
+
+@keyframes confetti-fall {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px) rotate(0deg);
+  }
+
+  16% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(280px) rotate(420deg);
+  }
+}
+
+@media (max-width: 640px) {
+  .app {
+    padding: 24px 12px 48px;
+  }
+
+  .score-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .controls {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .primary-button,
+  .secondary-button {
+    width: 100%;
+  }
+
+  .perfect-burst {
+    top: 12px;
+    max-width: calc(100% - 112px);
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .result-card.perfect,
+  .result-card.perfect::before,
+  .result-card.perfect::after,
+  .perfect-burst,
+  .result-card.perfect .rank-badge,
+  .confetti {
+    animation: none;
+  }
+}

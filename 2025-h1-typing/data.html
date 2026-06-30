@@ -1,0 +1,1926 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>タイピングスコア一覧</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      font-size: 11.7px; /* 13px × 0.9 */
+    }
+    nav {
+      background-color: #004466;
+      padding: 10px;
+      color: white;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin-right: 15px;
+      font-weight: bold;
+      font-size: 11.7px;
+    }
+    .container {
+      display: flex;
+      width: 100%;
+      height: calc(100vh - 50px);
+      overflow: hidden;
+    }
+    .table-container {
+      width: 55%;
+      overflow-y: auto;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+    .image-container {
+      width: 45%;
+      background: #f9f9f9;
+      border-left: 1px solid #ccc;
+      padding: 10px;
+      box-sizing: border-box;
+      position: relative;
+    }
+    .image-container h3 {
+      margin-top: 0;
+      font-size: 1em;
+    }
+    #preview {
+      max-width: 100%;
+      max-height: calc(100% - 30px);
+      border: 1px solid #aaa;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 11.7px;
+      table-layout: fixed;
+    }
+    th, td {
+      border: 1px solid #999;
+      padding: 3.6px 5.4px;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    thead th {
+      position: sticky;
+      top: 0;
+      background: #e6f2ff;
+      z-index: 3;
+      font-size: 10.8px;
+    }
+    tr:hover {
+      background-color: #f0f8ff;
+    }
+    tr.no-score {
+      background-color: #eee;
+      color: #888;
+    }
+
+    /* 列幅調整 */
+    th:nth-child(1), td:nth-child(1) { width: 100px; }   /* 日付 */
+    th:nth-child(2), td:nth-child(2) { width: 45px; }   /* スコア */
+    th:nth-child(3), td:nth-child(3) { width: 80px; }   /* レベル */
+    th:nth-child(4), td:nth-child(4) { width: 55px; }   /* 入力時間 */
+    th:nth-child(5), td:nth-child(5) { width: 55px; }   /* 入力文字数 */
+    th:nth-child(6), td:nth-child(6) { width: 55px; }   /* ミス入力数 */
+    th:nth-child(7), td:nth-child(7) { width: 60px; }   /* WPM */
+    th:nth-child(8), td:nth-child(8) { width: 60px; }   /* 正確率 */
+    th:nth-child(9), td:nth-child(9) { width: 75px; }   /* 苦手キー */
+
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html">概要</a>
+  <a href="data.html">一覧</a>
+  <a href="graph.html">グラフ</a>
+
+</nav>
+
+<div class="container">
+  <div class="table-container">
+    <h2 style="font-size: 1em;">タイピングスコア一覧</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>日付</th><th>スコア</th><th>レベル</th>
+          <th>入力時間</th><th>入力文字数</th><th>ミス入力数</th><th>WPM</th><th>正確率</th><th>苦手キー</th>
+        </tr>
+
+      </thead>
+      <tbody>
+    <tr class="score-row" data-image="images/2025-01-23.png">
+        <td>2025/01/23 (木)</td>
+        <td>405</td>
+        <td>Professor</td>
+        <td>27秒21</td>
+        <td>193</td>
+        <td>3</td>
+        <td>425.54</td>
+        <td>98.44%</td>
+        <td>H G</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-01-24.png">
+        <td>2025/01/24 (金)</td>
+        <td>433</td>
+        <td>Professor</td>
+        <td>26秒47</td>
+        <td>197</td>
+        <td>2</td>
+        <td>446.54</td>
+        <td>98.98%</td>
+        <td>I</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-01-25.png">
+        <td>2025/01/25 (土)</td>
+        <td>426</td>
+        <td>Professor</td>
+        <td>28秒02</td>
+        <td>211</td>
+        <td>4</td>
+        <td>451.78</td>
+        <td>98.10%</td>
+        <td>I R</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-01-26.png">
+        <td>2025/01/26 (日)</td>
+        <td>424</td>
+        <td>Professor</td>
+        <td>26秒45</td>
+        <td>196</td>
+        <td>3</td>
+        <td>444.59</td>
+        <td>98.46%</td>
+        <td>N A</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-01-27.png">
+        <td>2025/01/27 (月)</td>
+        <td>454</td>
+        <td>LaserBeam</td>
+        <td>24秒70</td>
+        <td>193</td>
+        <td>2</td>
+        <td>468.78</td>
+        <td>98.96%</td>
+        <td>I</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-01-28.png">
+        <td>2025/01/28 (火)</td>
+        <td>484</td>
+        <td>LaserBeam</td>
+        <td>39秒74</td>
+        <td>324</td>
+        <td>1</td>
+        <td>489.13</td>
+        <td>99.69%</td>
+        <td>A</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-01-29.png">
+        <td>2025/01/29 (水)</td>
+        <td>418</td>
+        <td>Professor</td>
+        <td>48秒36</td>
+        <td>355</td>
+        <td>6</td>
+        <td>440.38</td>
+        <td>98.30%</td>
+        <td>D I S O</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-01-30.png">
+        <td>2025/01/30 (木)</td>
+        <td>447</td>
+        <td>Professor</td>
+        <td>43秒40</td>
+        <td>347</td>
+        <td>8</td>
+        <td>479.66</td>
+        <td>97.69%</td>
+        <td>T B K</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-01-31.png">
+        <td>2025/01/31 (金)</td>
+        <td>432</td>
+        <td>Professor</td>
+        <td>43秒72</td>
+        <td>350</td>
+        <td>12</td>
+        <td>480.3</td>
+        <td>96.57%</td>
+        <td>A I S K U</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-02-01.png">
+        <td>2025/02/01 (土)</td>
+        <td>458</td>
+        <td>LaserBeam</td>
+        <td>41秒79</td>
+        <td>328</td>
+        <td>3</td>
+        <td>470.85</td>
+        <td>99.08%</td>
+        <td>K T</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-02-02.png">
+        <td>2025/02/02 (日)</td>
+        <td>461</td>
+        <td>LaserBeam</td>
+        <td>41秒77</td>
+        <td>342</td>
+        <td>7</td>
+        <td>491.16</td>
+        <td>97.95%</td>
+        <td>N K E T</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-02-03.png">
+        <td>2025/02/03 (月)</td>
+        <td>483</td>
+        <td>LaserBeam</td>
+        <td>38秒81</td>
+        <td>322</td>
+        <td>3</td>
+        <td>497.72</td>
+        <td>99.06%</td>
+        <td>R K U</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-02-04.png">
+        <td>2025/02/04 (火)</td>
+        <td>479</td>
+        <td>LaserBeam</td>
+        <td>33秒69</td>
+        <td>281</td>
+        <td>4</td>
+        <td>500.31</td>
+        <td>98.57%</td>
+        <td>E A M O</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-02-05.png">
+        <td>2025/02/05 (水)</td>
+        <td>503</td>
+        <td>EddieVH</td>
+        <td>38秒70</td>
+        <td>337</td>
+        <td>4</td>
+        <td>522.35</td>
+        <td>98.81%</td>
+        <td>K B S</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-02-06.png">
+        <td>2025/02/06 (木)</td>
+        <td>490</td>
+        <td>LaserBeam</td>
+        <td>38秒84</td>
+        <td>344</td>
+        <td>9</td>
+        <td>531.35</td>
+        <td>97.38%</td>
+        <td>R I A S</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-02-07.png">
+        <td>2025/02/07 (金)</td>
+        <td>448</td>
+        <td>Professor</td>
+        <td>40秒16</td>
+        <td>324</td>
+        <td>8</td>
+        <td>483.96</td>
+        <td>97.53%</td>
+        <td>O D I R A</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-02-08.png">
+        <td>2025/02/08 (土)</td>
+        <td>470</td>
+        <td>LaserBeam</td>
+        <td>41秒31</td>
+        <td>356</td>
+        <td>11</td>
+        <td>517.01</td>
+        <td>96.91%</td>
+        <td>T H E M K</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-02-09.png">
+        <td>2025/02/09 (日)</td>
+        <td>428</td>
+        <td>Professor</td>
+        <td>38秒04</td>
+        <td>312</td>
+        <td>14</td>
+        <td>491.99</td>
+        <td>95.51%</td>
+        <td>K N I O U</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-02-10.png">
+        <td>2025/02/10 (月)</td>
+        <td>469</td>
+        <td>LaserBeam</td>
+        <td>35秒04</td>
+        <td>309</td>
+        <td>12</td>
+        <td>529.03</td>
+        <td>96.11%</td>
+        <td>A I M R K</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-02-11.png">
+        <td>2025/02/11 (火)</td>
+        <td>440</td>
+        <td>Professor</td>
+        <td>38秒30</td>
+        <td>287</td>
+        <td>2</td>
+        <td>449.5</td>
+        <td>99.30%</td>
+        <td>A R</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-02-12.png">
+        <td>2025/02/12 (水)</td>
+        <td>461</td>
+        <td>LaserBeam</td>
+        <td>35秒33</td>
+        <td>281</td>
+        <td>3</td>
+        <td>477.1</td>
+        <td>98.93%</td>
+        <td>U I</td>
+    </tr>
+    <tr class="score-row no-score" data-image="images/oyasumi.png">
+        <td>2025/02/13 (木)</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr class="score-row no-score" data-image="images/oyasumi.png">
+        <td>2025/02/14 (金)</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr class="score-row no-score" data-image="images/oyasumi.png">
+        <td>2025/02/15 (土)</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-02-16.png">
+        <td>2025/02/16 (日)</td>
+        <td>490</td>
+        <td>LaserBeam</td>
+        <td>36秒71</td>
+        <td>315</td>
+        <td>5</td>
+        <td>514.74</td>
+        <td>98.41%</td>
+        <td>A I S K</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-02-17.png">
+        <td>2025/02/17 (月)</td>
+        <td>471</td>
+        <td>LaserBeam</td>
+        <td>42秒86</td>
+        <td>363</td>
+        <td>9</td>
+        <td>508.05</td>
+        <td>97.52%</td>
+        <td>T R W A N</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-02-18.png">
+        <td>2025/02/18 (火)</td>
+        <td>486</td>
+        <td>LaserBeam</td>
+        <td>40秒50</td>
+        <td>346</td>
+        <td>6</td>
+        <td>512.57</td>
+        <td>98.26%</td>
+        <td>O T M E I</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-02-19.png">
+        <td>2025/02/19 (水)</td>
+        <td>510</td>
+        <td>EddieVH</td>
+        <td>35秒02</td>
+        <td>301</td>
+        <td>1</td>
+        <td>515.6</td>
+        <td>99.66%</td>
+        <td>P</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-02-20.png">
+        <td>2025/02/20 (木)</td>
+        <td>446</td>
+        <td>Professor</td>
+        <td>42秒02</td>
+        <td>345</td>
+        <td>11</td>
+        <td>492.55</td>
+        <td>96.81%</td>
+        <td>T G W S A</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-02-21.png">
+        <td>2025/02/21 (金)</td>
+        <td>501</td>
+        <td>EddieVH</td>
+        <td>40秒68</td>
+        <td>352</td>
+        <td>4</td>
+        <td>519.16</td>
+        <td>98.86%</td>
+        <td>O J G</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-02-22.png">
+        <td>2025/02/22 (土)</td>
+        <td>498</td>
+        <td>LaserBeam</td>
+        <td>38秒40</td>
+        <td>331</td>
+        <td>4</td>
+        <td>517.13</td>
+        <td>98.79%</td>
+        <td>T O M A</td>
+    </tr>
+    <tr class="score-row no-score" data-image="images/oyasumi.png">
+        <td>2025/02/23 (日)</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-02-24.png">
+        <td>2025/02/24 (月)</td>
+        <td>475</td>
+        <td>LaserBeam</td>
+        <td>36秒87</td>
+        <td>301</td>
+        <td>3</td>
+        <td>489.73</td>
+        <td>99.00%</td>
+        <td>H R</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-02-25.png">
+        <td>2025/02/25 (火)</td>
+        <td>485</td>
+        <td>LaserBeam</td>
+        <td>37秒23</td>
+        <td>301</td>
+        <td>0</td>
+        <td>485.04</td>
+        <td>100%</td>
+        <td></td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-02-26.png">
+        <td>2025/02/26 (水)</td>
+        <td>464</td>
+        <td>LaserBeam</td>
+        <td>37秒85</td>
+        <td>293</td>
+        <td>0</td>
+        <td>464.45</td>
+        <td>100%</td>
+        <td></td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-02-27.png">
+        <td>2025/02/27 (木)</td>
+        <td>488</td>
+        <td>LaserBeam</td>
+        <td>41秒98</td>
+        <td>351</td>
+        <td>3</td>
+        <td>501.61</td>
+        <td>99.14%</td>
+        <td>G T A</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-02-28.png">
+        <td>2025/02/28 (金)</td>
+        <td>457</td>
+        <td>LaserBeam</td>
+        <td>40秒41</td>
+        <td>308</td>
+        <td>0</td>
+        <td>457.22</td>
+        <td>100%</td>
+        <td></td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-03-01.png">
+        <td>2025/03/01 (土)</td>
+        <td>460</td>
+        <td>LaserBeam</td>
+        <td>37秒67</td>
+        <td>301</td>
+        <td>4</td>
+        <td>479.37</td>
+        <td>98.67%</td>
+        <td>I A T</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-03-02.png">
+        <td>2025/03/02 (日)</td>
+        <td>481</td>
+        <td>LaserBeam</td>
+        <td>39秒00</td>
+        <td>328</td>
+        <td>5</td>
+        <td>504.53</td>
+        <td>98.47%</td>
+        <td>W K I J</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-03-03.png">
+        <td>2025/03/03 (月)</td>
+        <td>489</td>
+        <td>LaserBeam</td>
+        <td>36秒14</td>
+        <td>304</td>
+        <td>3</td>
+        <td>504.62</td>
+        <td>99.01%</td>
+        <td>W A</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-03-04.png">
+        <td>2025/03/04 (火)</td>
+        <td>513</td>
+        <td>EddieVH</td>
+        <td>42秒04</td>
+        <td>375</td>
+        <td>5</td>
+        <td>535.11</td>
+        <td>98.66%</td>
+        <td>T R N I</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-03-05.png">
+        <td>2025/03/05 (水)</td>
+        <td>493</td>
+        <td>LaserBeam</td>
+        <td>37秒24</td>
+        <td>324</td>
+        <td>6</td>
+        <td>521.9</td>
+        <td>98.14%</td>
+        <td>A Y N H I</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-03-06.png">
+        <td>2025/03/06 (木)</td>
+        <td>482</td>
+        <td>LaserBeam</td>
+        <td>44秒59</td>
+        <td>385</td>
+        <td>9</td>
+        <td>517.97</td>
+        <td>97.66%</td>
+        <td>A T O R M</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-03-07.png">
+        <td>2025/03/07 (金)</td>
+        <td>460</td>
+        <td>LaserBeam</td>
+        <td>47秒32</td>
+        <td>384</td>
+        <td>7</td>
+        <td>486.82</td>
+        <td>98.17%</td>
+        <td>N U A</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-03-08.png">
+        <td>2025/03/08 (土)</td>
+        <td>470</td>
+        <td>LaserBeam</td>
+        <td>39秒68</td>
+        <td>343</td>
+        <td>11</td>
+        <td>518.6</td>
+        <td>96.79%</td>
+        <td>A I M H S</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-03-09.png">
+        <td>2025/03/09 (日)</td>
+        <td>515</td>
+        <td>EddieVH</td>
+        <td>41秒04</td>
+        <td>356</td>
+        <td>1</td>
+        <td>520.46</td>
+        <td>99.71%</td>
+        <td>D</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-03-10.png">
+        <td>2025/03/10 (月)</td>
+        <td>472</td>
+        <td>LaserBeam</td>
+        <td>43秒53</td>
+        <td>352</td>
+        <td>3</td>
+        <td>485.12</td>
+        <td>99.14%</td>
+        <td>H A</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-03-11.png">
+        <td>2025/03/11 (火)</td>
+        <td>476</td>
+        <td>LaserBeam</td>
+        <td>49秒94</td>
+        <td>420</td>
+        <td>8</td>
+        <td>504.52</td>
+        <td>98.09%</td>
+        <td>O W S T E</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-03-12.png">
+        <td>2025/03/12 (水)</td>
+        <td>478</td>
+        <td>LaserBeam</td>
+        <td>45秒67</td>
+        <td>367</td>
+        <td>1</td>
+        <td>482.15</td>
+        <td>99.72%</td>
+        <td>A</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-03-13.png">
+        <td>2025/03/13 (木)</td>
+        <td>499</td>
+        <td>LaserBeam</td>
+        <td>47秒67</td>
+        <td>423</td>
+        <td>9</td>
+        <td>532.36</td>
+        <td>97.87%</td>
+        <td>A M U R I</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-03-14.png">
+        <td>2025/03/14 (金)</td>
+        <td>479</td>
+        <td>LaserBeam</td>
+        <td>47秒73</td>
+        <td>402</td>
+        <td>7</td>
+        <td>505.34</td>
+        <td>98.25%</td>
+        <td>U W M</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-03-15.png">
+        <td>2025/03/15 (土)</td>
+        <td>519</td>
+        <td>EddieVH</td>
+        <td>44秒68</td>
+        <td>393</td>
+        <td>2</td>
+        <td>527.68</td>
+        <td>99.49%</td>
+        <td>W</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-03-16.png">
+        <td>2025/03/16 (日)</td>
+        <td>495</td>
+        <td>LaserBeam</td>
+        <td>50秒48</td>
+        <td>417</td>
+        <td>0</td>
+        <td>495.61</td>
+        <td>100%</td>
+        <td></td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-03-17.png">
+        <td>2025/03/17 (月)</td>
+        <td>501</td>
+        <td>EddieVH</td>
+        <td>43秒07</td>
+        <td>378</td>
+        <td>6</td>
+        <td>526.57</td>
+        <td>98.41%</td>
+        <td>I A E</td>
+    </tr>
+    <tr class="score-row no-score" data-image="images/oyasumi.png">
+        <td>2025/03/18 (火)</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-03-19.png">
+        <td>2025/03/19 (水)</td>
+        <td>489</td>
+        <td>LaserBeam</td>
+        <td>32秒35</td>
+        <td>264</td>
+        <td>0</td>
+        <td>489.52</td>
+        <td>100%</td>
+        <td></td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-03-20.png">
+        <td>2025/03/20 (木)</td>
+        <td>461</td>
+        <td>LaserBeam</td>
+        <td>34秒50</td>
+        <td>277</td>
+        <td>4</td>
+        <td>481.66</td>
+        <td>98.55%</td>
+        <td>S T A H</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-03-21.png">
+        <td>2025/03/21 (金)</td>
+        <td>461</td>
+        <td>LaserBeam</td>
+        <td>30秒81</td>
+        <td>249</td>
+        <td>4</td>
+        <td>484.79</td>
+        <td>98.39%</td>
+        <td>S H U</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-03-22.png">
+        <td>2025/03/22 (土)</td>
+        <td>478</td>
+        <td>LaserBeam</td>
+        <td>30秒36</td>
+        <td>251</td>
+        <td>3</td>
+        <td>496.03</td>
+        <td>98.80%</td>
+        <td>A K R</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-03-23.png">
+        <td>2025/03/23 (日)</td>
+        <td>488</td>
+        <td>LaserBeam</td>
+        <td>34秒41</td>
+        <td>289</td>
+        <td>3</td>
+        <td>503.87</td>
+        <td>98.96%</td>
+        <td>N T</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-03-24.png">
+        <td>2025/03/24 (月)</td>
+        <td>497</td>
+        <td>LaserBeam</td>
+        <td>31秒20</td>
+        <td>262</td>
+        <td>1</td>
+        <td>503.78</td>
+        <td>99.61%</td>
+        <td>N</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-03-25.png">
+        <td>2025/03/25 (火)</td>
+        <td>482</td>
+        <td>LaserBeam</td>
+        <td>38秒76</td>
+        <td>312</td>
+        <td>0</td>
+        <td>482.97</td>
+        <td>100%</td>
+        <td></td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-03-26.png">
+        <td>2025/03/26 (水)</td>
+        <td>468</td>
+        <td>LaserBeam</td>
+        <td>36秒66</td>
+        <td>304</td>
+        <td>6</td>
+        <td>497.42</td>
+        <td>98.02%</td>
+        <td>D I R N</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-03-27.png">
+        <td>2025/03/27 (木)</td>
+        <td>533</td>
+        <td>EddieVH</td>
+        <td>37秒34</td>
+        <td>335</td>
+        <td>1</td>
+        <td>538.25</td>
+        <td>99.70%</td>
+        <td>W</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-03-28.png">
+        <td>2025/03/28 (金)</td>
+        <td>498</td>
+        <td>LaserBeam</td>
+        <td>34秒93</td>
+        <td>299</td>
+        <td>3</td>
+        <td>513.56</td>
+        <td>98.99%</td>
+        <td>R K N</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-03-29.png">
+        <td>2025/03/29 (土)</td>
+        <td>504</td>
+        <td>EddieVH</td>
+        <td>32秒97</td>
+        <td>295</td>
+        <td>6</td>
+        <td>536.85</td>
+        <td>97.96%</td>
+        <td>B R I W T</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-03-30.png">
+        <td>2025/03/30 (日)</td>
+        <td>496</td>
+        <td>LaserBeam</td>
+        <td>38秒72</td>
+        <td>335</td>
+        <td>5</td>
+        <td>519.08</td>
+        <td>98.50%</td>
+        <td>K I A N</td>
+    </tr>
+    <tr class="score-row no-score" data-image="images/oyasumi.png">
+        <td>2025/03/31 (月)</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-04-01.png">
+        <td>2025/04/01 (火)</td>
+        <td>501</td>
+        <td>EddieVH</td>
+        <td>37秒91</td>
+        <td>320</td>
+        <td>1</td>
+        <td>506.35</td>
+        <td>99.68%</td>
+        <td>H</td>
+    </tr>
+    <tr class="score-row no-score" data-image="images/oyasumi.png">
+        <td>2025/04/02 (水)</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr class="score-row no-score" data-image="images/oyasumi.png">
+        <td>2025/04/03 (木)</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-04-04.png">
+        <td>2025/04/04 (金)</td>
+        <td>486</td>
+        <td>LaserBeam</td>
+        <td>41秒03</td>
+        <td>356</td>
+        <td>8</td>
+        <td>520.58</td>
+        <td>97.75%</td>
+        <td>G A T H</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-04-05.png">
+        <td>2025/04/05 (土)</td>
+        <td>478</td>
+        <td>LaserBeam</td>
+        <td>38秒70</td>
+        <td>329</td>
+        <td>7</td>
+        <td>510.01</td>
+        <td>97.87%</td>
+        <td>W T U</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-04-06.png">
+        <td>2025/04/06 (日)</td>
+        <td>471</td>
+        <td>LaserBeam</td>
+        <td>40秒58</td>
+        <td>325</td>
+        <td>2</td>
+        <td>480.47</td>
+        <td>99.38%</td>
+        <td>E</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-04-07.png">
+        <td>2025/04/07 (月)</td>
+        <td>495</td>
+        <td>LaserBeam</td>
+        <td>42秒66</td>
+        <td>367</td>
+        <td>5</td>
+        <td>516.12</td>
+        <td>98.63%</td>
+        <td>I D O</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-04-08.png">
+        <td>2025/04/08 (火)</td>
+        <td>441</td>
+        <td>Professor</td>
+        <td>34秒14</td>
+        <td>263</td>
+        <td>4</td>
+        <td>462.17</td>
+        <td>98.47%</td>
+        <td>T I</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-04-09.png">
+        <td>2025/04/09 (水)</td>
+        <td>448</td>
+        <td>Professor</td>
+        <td>34秒00</td>
+        <td>254</td>
+        <td>0</td>
+        <td>448.22</td>
+        <td>100%</td>
+        <td></td>
+    </tr>
+    <tr class="score-row no-score" data-image="images/oyasumi.png">
+        <td>2025/04/10 (木)</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-04-11.png">
+        <td>2025/04/11 (金)</td>
+        <td>505</td>
+        <td>EddieVH</td>
+        <td>30秒39</td>
+        <td>259</td>
+        <td>1</td>
+        <td>511.3</td>
+        <td>99.61%</td>
+        <td>N</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-04-12.png">
+        <td>2025/04/12 (土)</td>
+        <td>458</td>
+        <td>LaserBeam</td>
+        <td>34秒45</td>
+        <td>272</td>
+        <td>3</td>
+        <td>473.67</td>
+        <td>98.89%</td>
+        <td>R</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-04-13.png">
+        <td>2025/04/13 (日)</td>
+        <td>482</td>
+        <td>LaserBeam</td>
+        <td>30秒50</td>
+        <td>254</td>
+        <td>3</td>
+        <td>499.62</td>
+        <td>98.81%</td>
+        <td>R I N</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-04-14.png">
+        <td>2025/04/14 (月)</td>
+        <td>489</td>
+        <td>LaserBeam</td>
+        <td>29秒79</td>
+        <td>246</td>
+        <td>1</td>
+        <td>495.38</td>
+        <td>99.59%</td>
+        <td>K</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-04-15.png">
+        <td>2025/04/15 (火)</td>
+        <td>471</td>
+        <td>LaserBeam</td>
+        <td>31秒97</td>
+        <td>257</td>
+        <td>2</td>
+        <td>482.32</td>
+        <td>99.22%</td>
+        <td>T A</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-04-16.png">
+        <td>2025/04/16 (水)</td>
+        <td>472</td>
+        <td>LaserBeam</td>
+        <td>35秒32</td>
+        <td>281</td>
+        <td>1</td>
+        <td>477.33</td>
+        <td>99.64%</td>
+        <td>R</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-04-17.png">
+        <td>2025/04/17 (木)</td>
+        <td>502</td>
+        <td>EddieVH</td>
+        <td>31秒45</td>
+        <td>278</td>
+        <td>5</td>
+        <td>530.33</td>
+        <td>98.20%</td>
+        <td>O E G</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-04-18.png">
+        <td>2025/04/18 (金)</td>
+        <td>487</td>
+        <td>LaserBeam</td>
+        <td>36秒84</td>
+        <td>308</td>
+        <td>3</td>
+        <td>501.57</td>
+        <td>99.02%</td>
+        <td>M U N</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-04-19.png">
+        <td>2025/04/19 (土)</td>
+        <td>480</td>
+        <td>LaserBeam</td>
+        <td>36秒25</td>
+        <td>302</td>
+        <td>4</td>
+        <td>499.76</td>
+        <td>98.67%</td>
+        <td>I</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-04-20.png">
+        <td>2025/04/20 (日)</td>
+        <td>527</td>
+        <td>EddieVH</td>
+        <td>29秒48</td>
+        <td>268</td>
+        <td>3</td>
+        <td>545.3</td>
+        <td>98.88%</td>
+        <td>E B K</td>
+    </tr>
+    <tr class="score-row no-score" data-image="images/oyasumi.png">
+        <td>2025/04/21 (月)</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-04-22.png">
+        <td>2025/04/22 (火)</td>
+        <td>474</td>
+        <td>LaserBeam</td>
+        <td>36秒89</td>
+        <td>292</td>
+        <td>0</td>
+        <td>474.92</td>
+        <td>100%</td>
+        <td></td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-04-23.png">
+        <td>2025/04/23 (水)</td>
+        <td>493</td>
+        <td>LaserBeam</td>
+        <td>40秒39</td>
+        <td>335</td>
+        <td>1</td>
+        <td>497.64</td>
+        <td>99.70%</td>
+        <td>E</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-04-24.png">
+        <td>2025/04/24 (木)</td>
+        <td>490</td>
+        <td>LaserBeam</td>
+        <td>34秒09</td>
+        <td>279</td>
+        <td>0</td>
+        <td>490.95</td>
+        <td>100%</td>
+        <td></td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-04-25.png">
+        <td>2025/04/25 (金)</td>
+        <td>489</td>
+        <td>LaserBeam</td>
+        <td>38秒62</td>
+        <td>321</td>
+        <td>2</td>
+        <td>498.6</td>
+        <td>99.37%</td>
+        <td>N E</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-04-26.png">
+        <td>2025/04/26 (土)</td>
+        <td>493</td>
+        <td>LaserBeam</td>
+        <td>34秒11</td>
+        <td>301</td>
+        <td>7</td>
+        <td>529.35</td>
+        <td>97.67%</td>
+        <td>K N A I P</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-04-27.png">
+        <td>2025/04/27 (日)</td>
+        <td>503</td>
+        <td>EddieVH</td>
+        <td>37秒06</td>
+        <td>329</td>
+        <td>6</td>
+        <td>532.62</td>
+        <td>98.17%</td>
+        <td>O T U</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-04-28.png">
+        <td>2025/04/28 (月)</td>
+        <td>495</td>
+        <td>LaserBeam</td>
+        <td>36秒83</td>
+        <td>319</td>
+        <td>5</td>
+        <td>519.68</td>
+        <td>98.43%</td>
+        <td>K S O U</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-04-29.png">
+        <td>2025/04/29 (火)</td>
+        <td>469</td>
+        <td>LaserBeam</td>
+        <td>23秒29</td>
+        <td>191</td>
+        <td>3</td>
+        <td>491.97</td>
+        <td>98.42%</td>
+        <td>I A</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-04-30.png">
+        <td>2025/04/30 (水)</td>
+        <td>461</td>
+        <td>LaserBeam</td>
+        <td>22秒99</td>
+        <td>183</td>
+        <td>2</td>
+        <td>477.47</td>
+        <td>98.90%</td>
+        <td>T</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-05-01.png">
+        <td>2025/05/01 (木)</td>
+        <td>475</td>
+        <td>LaserBeam</td>
+        <td>22秒98</td>
+        <td>185</td>
+        <td>1</td>
+        <td>482.88</td>
+        <td>99.45%</td>
+        <td>O</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-05-02.png">
+        <td>2025/05/02 (金)</td>
+        <td>504</td>
+        <td>EddieVH</td>
+        <td>22秒46</td>
+        <td>192</td>
+        <td>1</td>
+        <td>512.72</td>
+        <td>99.47%</td>
+        <td>N</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-05-03.png">
+        <td>2025/05/03 (土)</td>
+        <td>463</td>
+        <td>LaserBeam</td>
+        <td>23秒68</td>
+        <td>183</td>
+        <td>0</td>
+        <td>463.64</td>
+        <td>100%</td>
+        <td></td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-05-04.png">
+        <td>2025/05/04 (日)</td>
+        <td>482</td>
+        <td>LaserBeam</td>
+        <td>22秒01</td>
+        <td>183</td>
+        <td>2</td>
+        <td>498.77</td>
+        <td>98.90%</td>
+        <td>E M</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-05-05.png">
+        <td>2025/05/05 (月)</td>
+        <td>481</td>
+        <td>LaserBeam</td>
+        <td>23秒04</td>
+        <td>191</td>
+        <td>2</td>
+        <td>497.28</td>
+        <td>98.95%</td>
+        <td>K</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-05-06.png">
+        <td>2025/05/06 (火)</td>
+        <td>486</td>
+        <td>LaserBeam</td>
+        <td>32秒96</td>
+        <td>276</td>
+        <td>3</td>
+        <td>502.3</td>
+        <td>98.91%</td>
+        <td>T W</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-05-07.png">
+        <td>2025/05/07 (水)</td>
+        <td>485</td>
+        <td>LaserBeam</td>
+        <td>32秒87</td>
+        <td>278</td>
+        <td>4</td>
+        <td>507.43</td>
+        <td>98.56%</td>
+        <td>W S I</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-05-08.png">
+        <td>2025/05/08 (木)</td>
+        <td>508</td>
+        <td>EddieVH</td>
+        <td>30秒54</td>
+        <td>268</td>
+        <td>3</td>
+        <td>526.45</td>
+        <td>98.88%</td>
+        <td>G I</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-05-09.png">
+        <td>2025/05/09 (金)</td>
+        <td>423</td>
+        <td>Professor</td>
+        <td>34秒74</td>
+        <td>274</td>
+        <td>10</td>
+        <td>473.12</td>
+        <td>96.35%</td>
+        <td>S W O Y T</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-05-10.png">
+        <td>2025/05/10 (土)</td>
+        <td>505</td>
+        <td>EddieVH</td>
+        <td>30秒05</td>
+        <td>259</td>
+        <td>2</td>
+        <td>517.08</td>
+        <td>99.22%</td>
+        <td>Y S</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-05-11.png">
+        <td>2025/05/11 (日)</td>
+        <td>477</td>
+        <td>LaserBeam</td>
+        <td>32秒83</td>
+        <td>279</td>
+        <td>6</td>
+        <td>509.75</td>
+        <td>97.84%</td>
+        <td>F G O A N</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-05-12.png">
+        <td>2025/05/12 (月)</td>
+        <td>466</td>
+        <td>LaserBeam</td>
+        <td>35秒15</td>
+        <td>291</td>
+        <td>6</td>
+        <td>496.67</td>
+        <td>97.93%</td>
+        <td>I O K</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-05-13.png">
+        <td>2025/05/13 (火)</td>
+        <td>493</td>
+        <td>LaserBeam</td>
+        <td>38秒20</td>
+        <td>320</td>
+        <td>2</td>
+        <td>502.53</td>
+        <td>99.37%</td>
+        <td>O R</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-05-14.png">
+        <td>2025/05/14 (水)</td>
+        <td>495</td>
+        <td>LaserBeam</td>
+        <td>35秒84</td>
+        <td>314</td>
+        <td>6</td>
+        <td>525.53</td>
+        <td>98.08%</td>
+        <td>K N A</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-05-15.png">
+        <td>2025/05/15 (木)</td>
+        <td>502</td>
+        <td>EddieVH</td>
+        <td>34秒66</td>
+        <td>305</td>
+        <td>5</td>
+        <td>527.95</td>
+        <td>98.36%</td>
+        <td>G R T A</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-05-16.png">
+        <td>2025/05/16 (金)</td>
+        <td>487</td>
+        <td>LaserBeam</td>
+        <td>36秒45</td>
+        <td>314</td>
+        <td>6</td>
+        <td>516.77</td>
+        <td>98.08%</td>
+        <td>R A U O</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-05-17.png">
+        <td>2025/05/17 (土)</td>
+        <td>475</td>
+        <td>LaserBeam</td>
+        <td>36秒25</td>
+        <td>305</td>
+        <td>6</td>
+        <td>504.74</td>
+        <td>98.03%</td>
+        <td>R O M K</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-05-18.png">
+        <td>2025/05/18 (日)</td>
+        <td>437</td>
+        <td>Professor</td>
+        <td>37秒99</td>
+        <td>309</td>
+        <td>11</td>
+        <td>487.9</td>
+        <td>96.44%</td>
+        <td>A E T R N</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-05-19.png">
+        <td>2025/05/19 (月)</td>
+        <td>486</td>
+        <td>LaserBeam</td>
+        <td>40秒21</td>
+        <td>338</td>
+        <td>4</td>
+        <td>504.33</td>
+        <td>98.81%</td>
+        <td>G</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-05-20.png">
+        <td>2025/05/20 (火)</td>
+        <td>480</td>
+        <td>LaserBeam</td>
+        <td>33秒84</td>
+        <td>283</td>
+        <td>4</td>
+        <td>501.69</td>
+        <td>98.58%</td>
+        <td>M J S R</td>
+    </tr>
+    <tr class="score-row no-score" data-image="images/oyasumi.png">
+        <td>2025/05/21 (水)</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-05-22.png">
+        <td>2025/05/22 (木)</td>
+        <td>462</td>
+        <td>LaserBeam</td>
+        <td>39秒95</td>
+        <td>323</td>
+        <td>5</td>
+        <td>485.04</td>
+        <td>98.45%</td>
+        <td>M J</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-05-23.png">
+        <td>2025/05/23 (金)</td>
+        <td>419</td>
+        <td>Professor</td>
+        <td>38秒52</td>
+        <td>287</td>
+        <td>6</td>
+        <td>447.04</td>
+        <td>97.90%</td>
+        <td>W T I U</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-05-24.png">
+        <td>2025/05/24 (土)</td>
+        <td>534</td>
+        <td>EddieVH</td>
+        <td>31秒21</td>
+        <td>281</td>
+        <td>1</td>
+        <td>540.17</td>
+        <td>99.64%</td>
+        <td>W</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-05-25.png">
+        <td>2025/05/25 (日)</td>
+        <td>522</td>
+        <td>EddieVH</td>
+        <td>28秒95</td>
+        <td>252</td>
+        <td>0</td>
+        <td>522.27</td>
+        <td>100%</td>
+        <td></td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-05-26.png">
+        <td>2025/05/26 (月)</td>
+        <td>495</td>
+        <td>LaserBeam</td>
+        <td>32秒46</td>
+        <td>274</td>
+        <td>2</td>
+        <td>506.34</td>
+        <td>99.27%</td>
+        <td>- K</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-05-27.png">
+        <td>2025/05/27 (火)</td>
+        <td>505</td>
+        <td>EddieVH</td>
+        <td>31秒48</td>
+        <td>271</td>
+        <td>2</td>
+        <td>516.41</td>
+        <td>99.26%</td>
+        <td>S E</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-05-28.png">
+        <td>2025/05/28 (水)</td>
+        <td>530</td>
+        <td>EddieVH</td>
+        <td>34秒48</td>
+        <td>305</td>
+        <td>0</td>
+        <td>530.63</td>
+        <td>100%</td>
+        <td></td>
+    </tr>
+    <tr class="score-row no-score" data-image="images/oyasumi.png">
+        <td>2025/05/29 (木)</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-05-30.png">
+        <td>2025/05/30 (金)</td>
+        <td>460</td>
+        <td>LaserBeam</td>
+        <td>32秒04</td>
+        <td>258</td>
+        <td>4</td>
+        <td>483.14</td>
+        <td>98.44%</td>
+        <td>U B T</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-05-31.png">
+        <td>2025/05/31 (土)</td>
+        <td>465</td>
+        <td>LaserBeam</td>
+        <td>33秒00</td>
+        <td>268</td>
+        <td>4</td>
+        <td>487.19</td>
+        <td>98.50%</td>
+        <td>T I N K</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-06-01.png">
+        <td>2025/06/01 (日)</td>
+        <td>504</td>
+        <td>EddieVH</td>
+        <td>33秒93</td>
+        <td>300</td>
+        <td>5</td>
+        <td>530.48</td>
+        <td>98.33%</td>
+        <td>S M A Y</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-06-02.png">
+        <td>2025/06/02 (月)</td>
+        <td>485</td>
+        <td>LaserBeam</td>
+        <td>33秒61</td>
+        <td>281</td>
+        <td>3</td>
+        <td>501.62</td>
+        <td>98.93%</td>
+        <td>N E A</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-06-03.png">
+        <td>2025/06/03 (火)</td>
+        <td>477</td>
+        <td>LaserBeam</td>
+        <td>38秒94</td>
+        <td>322</td>
+        <td>4</td>
+        <td>496.08</td>
+        <td>98.75%</td>
+        <td>T U D</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-06-04.png">
+        <td>2025/06/04 (水)</td>
+        <td>484</td>
+        <td>LaserBeam</td>
+        <td>38秒17</td>
+        <td>311</td>
+        <td>1</td>
+        <td>488.85</td>
+        <td>99.67%</td>
+        <td>Y</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-06-05.png">
+        <td>2025/06/05 (木)</td>
+        <td>503</td>
+        <td>EddieVH</td>
+        <td>33秒76</td>
+        <td>301</td>
+        <td>6</td>
+        <td>534.85</td>
+        <td>98.00%</td>
+        <td>N K M</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-06-06.png">
+        <td>2025/06/06 (金)</td>
+        <td>488</td>
+        <td>LaserBeam</td>
+        <td>33秒81</td>
+        <td>290</td>
+        <td>5</td>
+        <td>514.53</td>
+        <td>98.27%</td>
+        <td>S E U</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-06-07.png">
+        <td>2025/06/07 (土)</td>
+        <td>492</td>
+        <td>LaserBeam</td>
+        <td>32秒29</td>
+        <td>277</td>
+        <td>4</td>
+        <td>514.61</td>
+        <td>98.55%</td>
+        <td>T A E R</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-06-08.png">
+        <td>2025/06/08 (日)</td>
+        <td>496</td>
+        <td>LaserBeam</td>
+        <td>35秒78</td>
+        <td>314</td>
+        <td>6</td>
+        <td>526.44</td>
+        <td>98.08%</td>
+        <td>A I H</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-06-09.png">
+        <td>2025/06/09 (月)</td>
+        <td>519</td>
+        <td>EddieVH</td>
+        <td>33秒97</td>
+        <td>309</td>
+        <td>5</td>
+        <td>545.74</td>
+        <td>98.38%</td>
+        <td>A U T</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-06-10.png">
+        <td>2025/06/10 (火)</td>
+        <td>476</td>
+        <td>LaserBeam</td>
+        <td>40秒00</td>
+        <td>338</td>
+        <td>7</td>
+        <td>506.98</td>
+        <td>97.92%</td>
+        <td>K I Y</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-06-11.png">
+        <td>2025/06/11 (水)</td>
+        <td>551</td>
+        <td>Meijin</td>
+        <td>38秒63</td>
+        <td>355</td>
+        <td>0</td>
+        <td>551.32</td>
+        <td>100.00%</td>
+        <td></td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-06-12.png">
+        <td>2025/06/12 (木)</td>
+        <td>529</td>
+        <td>EddieVH</td>
+        <td>37秒78</td>
+        <td>357</td>
+        <td>8</td>
+        <td>566.92</td>
+        <td>97.75%</td>
+        <td>E K A M U</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-06-13.png">
+        <td>2025/06/13 (金)</td>
+        <td>488</td>
+        <td>LaserBeam</td>
+        <td>37秒19</td>
+        <td>309</td>
+        <td>2</td>
+        <td>498.46</td>
+        <td>99.35%</td>
+        <td>E R</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-06-14.png">
+        <td>2025/06/14 (土)</td>
+        <td>484</td>
+        <td>LaserBeam</td>
+        <td>40秒45</td>
+        <td>350</td>
+        <td>8</td>
+        <td>519.05</td>
+        <td>97.71%</td>
+        <td>K I A R</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-06-15.png">
+        <td>2025/06/15 (日)</td>
+        <td>505</td>
+        <td>EddieVH</td>
+        <td>35秒81</td>
+        <td>331</td>
+        <td>10</td>
+        <td>554.46</td>
+        <td>96.97%</td>
+        <td>U R A T</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-06-16.png">
+        <td>2025/06/16 (月)</td>
+        <td>504</td>
+        <td>EddieVH</td>
+        <td>37秒74</td>
+        <td>338</td>
+        <td>7</td>
+        <td>537.34</td>
+        <td>97.92%</td>
+        <td>Y O B E A</td>
+    </tr>
+    <tr class="score-row no-score" data-image="images/oyasumi.png">
+        <td>2025/06/17 (火)</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-06-18.png">
+        <td>2025/06/18 (水)</td>
+        <td>500</td>
+        <td>EddieVH</td>
+        <td>43秒98</td>
+        <td>393</td>
+        <td>9</td>
+        <td>536.11</td>
+        <td>97.70%</td>
+        <td>T S I M K</td>
+    </tr>
+    <tr class="score-row no-score" data-image="images/oyasumi.png">
+        <td>2025/06/19 (木)</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-06-20.png">
+        <td>2025/06/20 (金)</td>
+        <td>506</td>
+        <td>EddieVH</td>
+        <td>39秒87</td>
+        <td>363</td>
+        <td>9</td>
+        <td>546.19</td>
+        <td>97.52%</td>
+        <td>A M R Y S</td>
+    </tr>
+    <tr class="score-row no-score" data-image="images/oyasumi.png">
+        <td>2025/06/21 (土)</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-06-22.png">
+        <td>2025/06/22 (日)</td>
+        <td>485</td>
+        <td>LaserBeam</td>
+        <td>39秒88</td>
+        <td>352</td>
+        <td>10</td>
+        <td>529.46</td>
+        <td>97.15%</td>
+        <td>R A N I M</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-06-23.png">
+        <td>2025/06/23 (月)</td>
+        <td>467</td>
+        <td>LaserBeam</td>
+        <td>44秒75</td>
+        <td>378</td>
+        <td>10</td>
+        <td>506.77</td>
+        <td>97.35%</td>
+        <td>O T A I E</td>
+    </tr>
+    <tr class="score-row no-score" data-image="images/oyasumi.png">
+        <td>2025/06/24 (火)</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-06-25.png">
+        <td>2025/06/25 (水)</td>
+        <td>486</td>
+        <td>LaserBeam</td>
+        <td>35秒17</td>
+        <td>297</td>
+        <td>4</td>
+        <td>506.68</td>
+        <td>98.65%</td>
+        <td>K W Y</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-06-26.png">
+        <td>2025/06/26 (木)</td>
+        <td>482</td>
+        <td>LaserBeam</td>
+        <td>36秒42</td>
+        <td>325</td>
+        <td>11</td>
+        <td>535.36</td>
+        <td>96.61%</td>
+        <td>Z N T I M</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-06-27.png">
+        <td>2025/06/27 (金)</td>
+        <td>483</td>
+        <td>LaserBeam</td>
+        <td>34秒40</td>
+        <td>289</td>
+        <td>4</td>
+        <td>504.01</td>
+        <td>98.61%</td>
+        <td>O J S</td>
+    </tr>
+    <tr class="score-row no-score" data-image="images/oyasumi.png">
+        <td>2025/06/28 (土)</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-06-29.png">
+        <td>2025/06/29 (日)</td>
+        <td>473</td>
+        <td>LaserBeam</td>
+        <td>32秒40</td>
+        <td>279</td>
+        <td>8</td>
+        <td>516.53</td>
+        <td>97.13%</td>
+        <td>E O K N</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-06-30.png">
+        <td>2025/06/30 (月)</td>
+        <td>501</td>
+        <td>EddieVH</td>
+        <td>35秒37</td>
+        <td>316</td>
+        <td>7</td>
+        <td>536.03</td>
+        <td>97.78%</td>
+        <td>T M O W</td>
+    </tr>
+    <tr class="score-row no-score" data-image="images/oyasumi.png">
+        <td>2025/07/01 (火)</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-07-02.png">
+        <td>2025/07/02 (水)</td>
+        <td>462</td>
+        <td>LaserBeam</td>
+        <td>41秒01</td>
+        <td>345</td>
+        <td>10</td>
+        <td>504.71</td>
+        <td>97.10%</td>
+        <td>H U A N I</td>
+    </tr>
+    <tr class="score-row" data-image="images/2025-07-03.png">
+        <td>2025/07/03 (木)</td>
+        <td>484</td>
+        <td>LaserBeam</td>
+        <td>40秒02</td>
+        <td>338</td>
+        <td>5</td>
+        <td>506.67</td>
+        <td>98.52%</td>
+        <td>W T G R</td>
+    </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="image-container">
+    <h3>証跡</h3>
+    <img id="preview" src="" alt="スクリーンショット">
+  </div>
+</div>
+
+<script>
+  const rows = document.querySelectorAll('.score-row');
+  const preview = document.getElementById('preview');
+
+  rows.forEach(row => {
+    row.addEventListener('mouseenter', () => {
+      const imageName = row.dataset.image;
+      if (!imageName) {
+        preview.src = "";
+        return;
+      }
+      preview.src = imageName;
+    });
+  });
+</script>
+
+</body>
+</html>

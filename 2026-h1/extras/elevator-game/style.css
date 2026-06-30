@@ -1,0 +1,944 @@
+:root {
+  --floor-h: 54px;
+  --col-left: 42px;
+  --elv-w: 44px;
+  --col-a: #2aa869;
+  --col-b: #3a7bd5;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #efefef;
+  color: #1a1a1a;
+  font-family: 'Noto Sans JP', sans-serif;
+  display: flex;
+  justify-content: center;
+  padding: 16px 8px 32px;
+  min-height: 100vh;
+}
+
+#game-wrap {
+  width: 800px;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ── Layout ── */
+#main-row {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+}
+
+#building-outer {
+  flex: 1 1 auto;
+  min-width: 460px;
+  position: relative;
+  background: #fff;
+  border-radius: 6px;
+  overflow: hidden;
+  /* 床数ぶんの高さに固定 */
+  height: calc(var(--floor-h) * 10);
+}
+
+#side-panel {
+  flex: 0 0 300px;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ── Header ── */
+#header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  background: #fff;
+  border-radius: 6px;
+  gap: 16px;
+}
+
+#header-right {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+#building-name {
+  font-size: 11px;
+  color: #999;
+  margin-bottom: 2px;
+  letter-spacing: 0.04em;
+}
+
+#title-txt {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.stat-label {
+  font-size: 10px;
+  color: #aaa;
+}
+
+#score-wrap { text-align: right; }
+
+#score-val {
+  font-size: 26px;
+  font-weight: 700;
+  color: #1a1a1a;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+#miss-wrap { text-align: right; }
+
+#miss-val {
+  font-size: 26px;
+  font-weight: 700;
+  color: #e53;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Combo (in header) ── */
+#combo-wrap {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: 64px;
+}
+
+#combo-val {
+  font-size: 22px;
+  font-weight: 700;
+  color: #ccc;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+#combo-val.active {
+  color: #e9a020;
+}
+
+#combo-bar-track {
+  height: 4px;
+  background: #eee;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+#combo-bar-fill {
+  height: 100%;
+  background: #e9a020;
+  border-radius: 2px;
+  transition: width 0.1s linear;
+}
+
+/* ── Timer (in header) ── */
+#timer-wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 160px;
+}
+
+#timer-head {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+#timer-label {
+  font-size: 10px;
+  color: #aaa;
+}
+
+#timer-val {
+  font-size: 26px;
+  font-weight: 700;
+  color: #1a1a1a;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  margin-left: 2px;
+}
+
+#timer-unit {
+  font-size: 11px;
+  color: #aaa;
+}
+
+#timer-bar-track {
+  height: 6px;
+  background: #eee;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+#timer-bar-fill {
+  height: 100%;
+  width: 100%;
+  background: #4a9;
+  border-radius: 3px;
+  transition: width 0.12s linear, background 0.25s;
+}
+
+#timer-wrap.urgent #timer-val { color: #e53; }
+#timer-wrap.urgent #timer-bar-fill { background: #e53; }
+
+/* ── Building ── */
+#building {
+  position: relative;
+  width: 100%;
+  z-index: 1;
+}
+
+.floor {
+  display: flex;
+  align-items: center;
+  height: var(--floor-h);
+  border-bottom: 1px solid #ebebeb;
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.1s;
+}
+
+.floor:last-child { border-bottom: none; }
+
+.floor:hover { background: #f4f9f6; }
+.floor:active { background: #eaf4ee; }
+
+.floor-num {
+  width: var(--col-left);
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: #bbb;
+  flex-shrink: 0;
+  z-index: 2;
+}
+
+.floor-num span {
+  font-size: 9px;
+}
+
+.floor-passengers {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  padding-left: 110px; /* シャフト2本ぶん空ける */
+  padding-right: 12px;
+  flex-wrap: nowrap;
+  overflow: hidden;
+  z-index: 2;
+  min-height: 100%;
+  position: relative;
+}
+
+/* ── Passenger chip ── */
+.pax-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #fafafa;
+  border: 1px solid #e4e4e4;
+  border-radius: 5px;
+  padding: 3px 5px 5px;
+  position: relative;
+  animation: pax-appear 0.2s ease;
+  min-width: 28px;
+}
+
+.pax-chip .pax-icon {
+  font-size: 15px;
+  line-height: 1;
+}
+
+.pax-chip .dir-badge {
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+  margin-top: 2px;
+  color: #555;
+}
+
+.pax-chip .dir-badge.up   { color: #1a8a4a; }
+.pax-chip .dir-badge.down { color: #2b6fc0; }
+
+.pax-chip.vip {
+  border-color: #e6c440;
+  background: #fffdf0;
+}
+
+.pax-chip .stress-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  border-radius: 0 0 4px 4px;
+  background: #eee;
+  overflow: hidden;
+}
+
+.pax-chip .stress-fill {
+  height: 100%;
+  background: #4a9;
+  transition: width 0.4s linear, background 0.4s;
+}
+
+.pax-chip.stressed .stress-fill { background: #e9a020; }
+.pax-chip.angry .stress-fill    { background: #e53; }
+
+@keyframes pax-appear {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pax-rage {
+  0%, 100% { transform: translateX(0); }
+  25%       { transform: translateX(-2px); }
+  75%       { transform: translateX(2px); }
+}
+
+/* 限界間近の客は帰ってしまうまで揺れ続ける */
+.pax-chip.raging {
+  animation: pax-rage 0.3s infinite;
+}
+
+.floor-wait-more {
+  font-size: 10px;
+  color: #888;
+  background: #f2f2f2;
+  border-radius: 10px;
+  padding: 2px 6px;
+  white-space: nowrap;
+}
+
+/* ── Shafts & Elevators (A/B 2本) ── */
+.shaft {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: var(--elv-w);
+  z-index: 3;
+  /* シャフト自体はクリックを透過させ、下の階クリックを邪魔しない */
+  pointer-events: none;
+}
+
+#shaft-0 { left: calc(var(--col-left) + 2px); }
+#shaft-1 { left: calc(var(--col-left) + var(--elv-w) + 8px); }
+
+.shaft::before,
+.shaft::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: #ddd;
+}
+
+.shaft::before { left: 0; }
+.shaft::after  { right: 0; }
+
+.elevator {
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  height: calc(var(--floor-h) - 6px);
+  bottom: 3px;
+  background: #333;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  overflow: visible;
+  z-index: 5;
+  cursor: pointer;
+  /* シャフトが pointer-events: none でも、かご自体はクリック可能にする */
+  pointer-events: auto;
+}
+
+/* 号機カラー */
+.elevator.elv-a { box-shadow: inset 0 0 0 2px var(--col-a); }
+.elevator.elv-b { box-shadow: inset 0 0 0 2px var(--col-b); }
+
+/* 選択中のかごを光らせる */
+.elevator.elv-a.selected { box-shadow: inset 0 0 0 2px var(--col-a), 0 0 10px rgba(42, 168, 105, 0.8); }
+.elevator.elv-b.selected { box-shadow: inset 0 0 0 2px var(--col-b), 0 0 10px rgba(58, 123, 213, 0.8); }
+
+/* 急行走行中 */
+.elevator.express {
+  box-shadow: inset 0 0 0 2px #f5c518, 0 0 12px rgba(245, 197, 24, 0.9) !important;
+}
+
+.elv-name {
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+  z-index: 7;
+  color: #fff;
+}
+
+.elv-a .elv-name { color: #7fe0b0; }
+.elv-b .elv-name { color: #9cc3f5; }
+
+.elv-floor-num {
+  font-size: 10px;
+  color: #ccc;
+  font-weight: 700;
+  line-height: 1;
+  z-index: 7;
+}
+
+.elv-target {
+  font-size: 8px;
+  color: #f5c518;
+  font-weight: 700;
+  line-height: 1;
+  z-index: 7;
+  min-height: 8px;
+}
+
+/* ── Doors (shaft mini elevator) ── */
+.door-left,
+.door-right {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  background: #555;
+  transition: width 0.2s ease;
+  z-index: 6;
+  border-radius: 4px;
+}
+
+.door-left  { left: 0;  border-radius: 4px 0 0 4px; }
+.door-right { right: 0; border-radius: 0 4px 4px 0; }
+
+.elevator.open .door-left,
+.elevator.open .door-right {
+  width: 0;
+}
+
+/* ── 号機カード（右パネル） ── */
+.elv-card {
+  background: #fff;
+  border-radius: 6px;
+  padding: 10px 12px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: border-color 0.12s, box-shadow 0.12s;
+  position: relative;
+}
+
+.elv-card.card-a.selected { border-color: var(--col-a); box-shadow: 0 0 8px rgba(42, 168, 105, 0.3); }
+.elv-card.card-b.selected { border-color: var(--col-b); box-shadow: 0 0 8px rgba(58, 123, 213, 0.3); }
+
+.card-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.card-name {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.card-a .card-name { background: var(--col-a); }
+.card-b .card-name { background: var(--col-b); }
+
+.card-floor {
+  font-size: 20px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.card-dir {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.card-dir.up   { background: #e6f5ee; color: #1a8a4a; }
+.card-dir.down { background: #e7f0fb; color: #2b6fc0; }
+.card-dir.none { background: #f0f0f0; color: #999; }
+
+.card-selected-tag {
+  margin-left: auto;
+  font-size: 10px;
+  font-weight: 700;
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 10px;
+  display: none;
+}
+
+.card-a .card-selected-tag { background: var(--col-a); }
+.card-b .card-selected-tag { background: var(--col-b); }
+
+.elv-card.selected .card-selected-tag { display: inline-block; }
+
+.card-slots {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.card-slot {
+  height: 52px;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.card-slot.empty {
+  border: 2px dashed #e2e2e2;
+  background: #fafafa;
+}
+
+.card-slot.filled {
+  background: #3a3a3a;
+}
+
+.card-slot.filled.vip {
+  background: #4a3f1a;
+  box-shadow: inset 0 0 0 1px #e6c440;
+}
+
+.card-slot.entering {
+  animation: slot-enter 0.3s ease;
+}
+
+@keyframes slot-enter {
+  from { transform: translateY(16px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+.cs-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.cs-dest {
+  font-size: 10px;
+  font-weight: 700;
+  color: #fff;
+  background: #4a9;
+  border-radius: 8px;
+  padding: 1px 7px;
+  line-height: 1.3;
+}
+
+.card-slot.vip .cs-dest {
+  background: #e6c440;
+  color: #1a1a1a;
+}
+
+.card-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.card-cap {
+  font-size: 13px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.card-cap.full { color: #e53; }
+
+.card-status {
+  font-size: 11px;
+  color: #888;
+}
+
+/* 急行クールタイム */
+.card-express {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.exp-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #c9930a;
+  white-space: nowrap;
+  min-width: 92px;
+}
+
+.exp-label.cooling { color: #aaa; }
+
+.exp-bar-track {
+  flex: 1;
+  height: 5px;
+  background: #eee;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.exp-bar-fill {
+  height: 100%;
+  background: #ccc;
+  border-radius: 3px;
+  transition: width 0.1s linear;
+}
+
+.exp-bar-fill.ready { background: #f5c518; }
+
+/* 無効操作のシェイク */
+@keyframes card-shake {
+  0%, 100% { transform: translateX(0); }
+  25%      { transform: translateX(-4px); }
+  75%      { transform: translateX(4px); }
+}
+
+.elv-card.shake {
+  animation: card-shake 0.12s 3;
+}
+
+#panel-note {
+  font-size: 11px;
+  color: #999;
+  line-height: 1.6;
+  padding: 2px 4px;
+}
+
+#panel-note b { color: #e53; }
+
+/* ── 操作説明バー ── */
+#help-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  padding: 10px 14px;
+  background: #fff;
+  border-radius: 6px;
+}
+
+.help-item {
+  font-size: 11px;
+  color: #888;
+}
+
+.help-item b {
+  color: #1a1a1a;
+}
+
+/* ── Toast ── */
+#toast {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%) translateY(8px);
+  background: rgba(26, 26, 26, 0.92);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 9px 18px;
+  border-radius: 20px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s, transform 0.15s;
+  z-index: 150;
+  white-space: nowrap;
+}
+
+#toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ── Overlay (start / result) ── */
+#overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 16px;
+}
+
+#overlay-inner {
+  background: #fff;
+  border-radius: 14px;
+  padding: 30px 32px;
+  text-align: center;
+  width: 360px;
+  max-width: 100%;
+}
+
+.screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+}
+
+.ov-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: #1a1a1a;
+  line-height: 1.3;
+}
+
+.ov-title.small {
+  font-size: 18px;
+  color: #888;
+}
+
+.ov-rules {
+  list-style: none;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  width: 100%;
+  background: #f7f7f7;
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+
+.ov-rules li {
+  font-size: 12px;
+  color: #555;
+  line-height: 1.4;
+  padding-left: 16px;
+  position: relative;
+}
+
+.ov-rules li::before {
+  content: '・';
+  position: absolute;
+  left: 0;
+  color: #bbb;
+}
+
+.ov-rules strong {
+  color: #1a1a1a;
+  font-weight: 700;
+}
+
+.ov-pc-note {
+  font-size: 11px;
+  color: #999;
+  background: #f5f5f5;
+  border-radius: 6px;
+  padding: 6px 14px;
+}
+
+.ov-best {
+  font-size: 13px;
+  color: #888;
+}
+
+.ov-best span {
+  font-size: 17px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+#result-best.new-best {
+  color: #e9a020;
+}
+
+#result-best.new-best span {
+  color: #e9a020;
+}
+
+.result-num {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.result-num #result-score {
+  font-size: 64px;
+  font-weight: 700;
+  color: #1a1a1a;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.result-unit {
+  font-size: 20px;
+  font-weight: 700;
+  color: #888;
+}
+
+.result-stats {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+.rs-item {
+  flex: 1;
+  background: #f7f7f7;
+  border-radius: 8px;
+  padding: 10px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rs-label {
+  font-size: 10px;
+  color: #999;
+}
+
+.rs-val {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1a1a1a;
+  font-variant-numeric: tabular-nums;
+}
+
+.ov-btn {
+  margin-top: 4px;
+  padding: 13px 36px;
+  background: #1a1a1a;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: 'Noto Sans JP', sans-serif;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.ov-btn:hover { background: #333; }
+.ov-btn:active { transform: scale(0.96); }
+
+/* ── 得点ポップ（建物内・該当階） ── */
+.floor-pop {
+  position: absolute;
+  left: 150px;
+  pointer-events: none;
+  z-index: 30;
+  animation: floor-pop-rise 1s ease forwards;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.floor-pop .fp-main {
+  font-size: 17px;
+  font-weight: 700;
+  color: #1a8a4a;
+}
+
+.floor-pop .fp-sub {
+  font-size: 12px;
+  font-weight: 700;
+  color: #e9a020;
+}
+
+.floor-pop.miss .fp-main {
+  color: #e53;
+  font-size: 14px;
+}
+
+@keyframes floor-pop-rise {
+  0%   { opacity: 0; transform: translateY(6px) scale(0.85); }
+  20%  { opacity: 1; transform: translateY(0) scale(1.05); }
+  35%  { transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-30px) scale(1); }
+}
+
+/* ── Drop animation ── */
+.drop-anim-chip {
+  position: absolute;
+  font-size: 16px;
+  pointer-events: none;
+  z-index: 20;
+  animation: drop-fade 0.7s ease forwards;
+}
+
+@keyframes drop-fade {
+  0%   { opacity: 1; transform: translate(0, 0) scale(1); }
+  100% { opacity: 0; transform: translate(24px, -6px) scale(1.2); }
+}
+
+/* ── タッチ端末向けガード ──
+   Shift＋クリック前提の操作のため、タッチ主体の端末では
+   ゲーム画面を覆って案内のみ表示する */
+#touch-guard {
+  display: none;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  #touch-guard {
+    display: flex;
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+    background: #f4f4f2;
+    padding: 24px;
+  }
+
+  #touch-guard .tg-inner {
+    max-width: 420px;
+    text-align: center;
+  }
+
+  #touch-guard .tg-icon {
+    font-size: 44px;
+    margin-bottom: 14px;
+  }
+
+  #touch-guard .tg-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 10px;
+  }
+
+  #touch-guard p {
+    margin: 0;
+    font-size: 13px;
+    color: #777;
+    line-height: 1.8;
+  }
+}

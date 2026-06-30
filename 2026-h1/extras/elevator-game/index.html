@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>黒海綿の花ビル エレベーターさばき</title>
+  <link rel="icon" type="image/png" href="./favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="game-wrap">
+    <div id="header">
+      <div>
+        <div id="building-name">黒海綿の花ビル</div>
+        <div id="title-txt">エレベーターさばき</div>
+      </div>
+      <div id="header-right">
+        <div id="timer-wrap">
+          <div id="timer-head">
+            <span id="timer-label">残り</span>
+            <span id="timer-val">90</span>
+            <span id="timer-unit">秒</span>
+          </div>
+          <div id="timer-bar-track">
+            <div id="timer-bar-fill" style="width:100%"></div>
+          </div>
+        </div>
+        <div id="combo-wrap">
+          <div class="stat-label">コンボ</div>
+          <div id="combo-val">—</div>
+          <div id="combo-bar-track">
+            <div id="combo-bar-fill" style="width:0%"></div>
+          </div>
+        </div>
+        <div id="miss-wrap">
+          <div class="stat-label">ミス</div>
+          <div id="miss-val">0</div>
+        </div>
+        <div id="score-wrap">
+          <div class="stat-label">スコア</div>
+          <div id="score-val">0</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="main-row">
+      <!-- 左：建物全体ビュー（シャフト2本） -->
+      <div id="building-outer">
+        <div id="building"></div>
+        <div class="shaft" id="shaft-0">
+          <div class="elevator elv-a" id="elv-0" data-e="0">
+            <div class="door-left"></div>
+            <div class="door-right"></div>
+            <div class="elv-name">A</div>
+            <div class="elv-floor-num" id="elv-floor-0">1F</div>
+            <div class="elv-target" id="elv-target-0"></div>
+          </div>
+        </div>
+        <div class="shaft" id="shaft-1">
+          <div class="elevator elv-b" id="elv-1" data-e="1">
+            <div class="door-left"></div>
+            <div class="door-right"></div>
+            <div class="elv-name">B</div>
+            <div class="elv-floor-num" id="elv-floor-1">5F</div>
+            <div class="elv-target" id="elv-target-1"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 右：号機カード（選択・状態表示） -->
+      <div id="side-panel">
+        <div class="elv-card card-a selected" id="card-0" data-e="0">
+          <div class="card-head">
+            <span class="card-name">A</span>
+            <span class="card-floor" id="card-floor-0">1F</span>
+            <span class="card-dir none" id="card-dir-0">停車</span>
+            <span class="card-selected-tag" id="seltag-0">操作中</span>
+          </div>
+          <div class="card-slots" id="card-slots-0"></div>
+          <div class="card-foot">
+            <span class="card-cap" id="card-cap-0">0 / 4</span>
+            <span class="card-status" id="card-status-0">待機中</span>
+          </div>
+          <div class="card-express">
+            <span class="exp-label" id="exp-label-0">⚡ 急行OK</span>
+            <div class="exp-bar-track"><div class="exp-bar-fill" id="exp-bar-0" style="width:100%"></div></div>
+          </div>
+        </div>
+
+        <div class="elv-card card-b" id="card-1" data-e="1">
+          <div class="card-head">
+            <span class="card-name">B</span>
+            <span class="card-floor" id="card-floor-1">5F</span>
+            <span class="card-dir none" id="card-dir-1">停車</span>
+            <span class="card-selected-tag" id="seltag-1">操作中</span>
+          </div>
+          <div class="card-slots" id="card-slots-1"></div>
+          <div class="card-foot">
+            <span class="card-cap" id="card-cap-1">0 / 4</span>
+            <span class="card-status" id="card-status-1">待機中</span>
+          </div>
+          <div class="card-express">
+            <span class="exp-label" id="exp-label-1">⚡ 急行OK</span>
+            <div class="exp-bar-track"><div class="exp-bar-fill" id="exp-bar-1" style="width:100%"></div></div>
+          </div>
+        </div>
+
+        <div id="panel-note">
+          連続で運ぶとコンボで倍率UP。<br>
+          客を待たせすぎると <b>ミス</b>（スコア減・コンボ消滅）。
+        </div>
+      </div>
+    </div>
+
+    <!-- 操作説明（常時表示） -->
+    <div id="help-bar">
+      <span class="help-item"><b>🖱 階クリック</b>：通常移動（途中階で同方向の客を自動で拾う）</span>
+      <span class="help-item"><b>⇧ Shift＋クリック</b>：急行で直行（クールタイム8秒）</span>
+      <span class="help-item"><b>A / B キー</b>：号機切替（カードやかごのクリックでも可）</span>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+  <!-- スタート / リザルト画面（共用オーバーレイ） -->
+  <div id="overlay">
+    <div id="overlay-inner">
+      <div id="screen-start" class="screen">
+        <div class="ov-title">エレベーターさばき</div>
+        <ul class="ov-rules">
+          <li><strong>A / B キー</strong>（またはクリック）で操作する号機を選ぶ</li>
+          <li><strong>階をクリック</strong>で通常移動。途中階で同方向の客を自動で拾う</li>
+          <li><strong>Shift＋クリック</strong>で急行。直行で速いがクールタイム8秒</li>
+          <li>連続で運ぶと<strong>コンボ</strong>でスコア倍率アップ（最大×3）</li>
+          <li>待たせすぎた客は怒って帰る＝<strong>ミス</strong>（−50点・コンボ消滅）</li>
+          <li>制限時間 <strong>90秒</strong>。2台をフル回転させよう</li>
+        </ul>
+        <div class="ov-pc-note">🖥️ このゲームはPC専用です（スマートフォン・タブレット非対応）</div>
+        <div class="ov-best">自己ベスト <span id="best-start">0</span> 点</div>
+        <button id="start-btn" class="ov-btn">▶ スタート</button>
+      </div>
+
+      <div id="screen-result" class="screen" style="display:none">
+        <div class="ov-title small">タイムアップ！</div>
+        <div class="result-num"><span id="result-score">0</span><span class="result-unit">点</span></div>
+        <div class="result-stats">
+          <div class="rs-item"><span class="rs-label">運んだ人数</span><span class="rs-val" id="result-count">0</span></div>
+          <div class="rs-item"><span class="rs-label">最大コンボ</span><span class="rs-val" id="result-combo">0</span></div>
+          <div class="rs-item"><span class="rs-label">ミス</span><span class="rs-val" id="result-miss">0</span></div>
+        </div>
+        <div id="result-best" class="ov-best"><span id="best-label">自己ベスト</span> <span id="best-result">0</span> 点</div>
+        <button id="retry-btn" class="ov-btn">もう一回</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- タッチ端末ではゲームを覆って案内のみ表示する（CSSのメディアクエリで切替） -->
+  <div id="touch-guard">
+    <div class="tg-inner">
+      <div class="tg-icon">🖥️</div>
+      <div class="tg-title">このゲームはPC専用です</div>
+      <p>
+        Shiftキーを使った操作（急行）があるため、<br>
+        スマートフォン・タブレットには対応していません。<br>
+        PCのブラウザでお楽しみください。
+      </p>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

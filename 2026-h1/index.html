@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>2026年上期 個人目標 レポート | Swiftアプリ開発とVibe Coding</title>
+        <link rel="icon" type="image/png" href="./favicon.png">
+        <link rel="stylesheet" href="../assets/style.css">
+        <style>
+            :root {
+                --accent: #3aaa6e;
+                --accent-soft: #edf7f2;
+                --accent-strong: #2a7a52;
+                --ink: #1f2933;
+                --focus-ring: rgba(42, 122, 82, 0.28);
+                /* 中央1080pxの段組みに揃えるための左右余白 */
+                --gutter: max(32px, (100% - 1080px) / 2);
+            }
+
+            /* 共有CSSの「グレー背景＋枠付きシート」を全幅レイアウトに上書き */
+            body {
+                background: #ffffff;
+            }
+
+            .page {
+                width: 100%;
+                padding: 0;
+            }
+
+            .report {
+                border: 0;
+                overflow-wrap: anywhere;
+            }
+
+            /* ヘッダー */
+            .report-hero {
+                padding: 52px var(--gutter) 46px;
+                background: linear-gradient(135deg, #142e28, #1d4a3a);
+                color: #f0f7f4;
+            }
+
+            .report-hero h1 {
+                margin: 0;
+                font-size: clamp(1.5rem, 3.5vw, 2.4rem);
+                line-height: 1.25;
+                color: #ffffff;
+            }
+
+            .report-hero .lead {
+                margin: 12px 0 0;
+                color: #c8e0d8;
+                font-size: 0.97rem;
+                max-width: 760px;
+            }
+
+            /* ナビゲーション（スクロールしても画面上部に固定） */
+            html {
+                scroll-behavior: auto;
+            }
+
+            .report-nav {
+                position: sticky;
+                top: 0;
+                z-index: 120;
+                display: flex;
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                scrollbar-width: none;
+                padding: 0 var(--gutter);
+                border-bottom: 1px solid var(--grid);
+                background: #ffffff;
+                transition: box-shadow 0.15s;
+            }
+
+            .report-nav::-webkit-scrollbar {
+                display: none;
+            }
+
+            .report-nav.is-stuck {
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+            }
+
+            .report-nav a {
+                position: relative;
+                display: inline-flex;
+                align-items: center;
+                gap: 7px;
+                min-height: 46px;
+                padding: 0 16px;
+                border-right: 1px solid var(--grid);
+                color: var(--ink);
+                text-decoration: none;
+                font-size: 0.9rem;
+                font-weight: 600;
+                white-space: nowrap;
+            }
+
+            .report-nav a .nav-num {
+                font-size: 0.72rem;
+                font-weight: 800;
+                letter-spacing: 0.04em;
+                color: var(--accent);
+            }
+
+            .report-nav a::after {
+                content: '';
+                position: absolute;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                height: 3px;
+                background: transparent;
+                transition: background 0.15s;
+            }
+
+            .report-nav a:hover {
+                background: var(--accent-soft);
+            }
+
+            .report-nav a.is-active {
+                color: var(--accent-strong);
+            }
+
+            .report-nav a.is-active::after {
+                background: var(--accent);
+            }
+
+            .report-nav .to-top {
+                margin-left: auto;
+                border-right: 0;
+                border-left: 1px solid var(--grid);
+                color: var(--muted);
+                font-weight: 500;
+            }
+
+            /* 固定ナビにアンカーが隠れないようにする */
+            .sheet-section {
+                scroll-margin-top: 47px;
+            }
+
+            /* セクション共通（仕切り線は引かず、余白で区切る） */
+            .sheet-section {
+                padding: 32px var(--gutter);
+                border-bottom: 0;
+            }
+
+            .section-heading {
+                display: flex;
+                align-items: baseline;
+                gap: 10px;
+                margin-bottom: 14px;
+                padding-bottom: 10px;
+                border-bottom: 2px solid var(--accent);
+            }
+
+            .section-number {
+                font-size: 1rem;
+                font-weight: 800;
+                letter-spacing: 0.05em;
+                color: var(--accent);
+            }
+
+            .section-heading h2 {
+                margin: 0;
+                font-size: 1.2rem;
+                color: var(--ink);
+            }
+
+            .section-sub {
+                margin: -6px 0 16px;
+                color: var(--ink);
+                font-size: 0.95rem;
+                max-width: 920px;
+            }
+
+            .sheet-section>p {
+                max-width: 960px;
+            }
+
+            #vibe-coding h3 {
+                margin-bottom: 6px;
+            }
+
+            /* 目標シート画像 */
+            .image-frame {
+                margin: 16px 0 0;
+            }
+
+            .image-frame img {
+                display: block;
+                max-width: 560px;
+                width: 100%;
+                height: auto;
+            }
+
+            /* アプリ特徴 */
+            .feature-row {
+                display: grid;
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 0 34px;
+                margin-top: 22px;
+                padding-top: 22px;
+                border-top: 1px solid var(--grid);
+            }
+
+            .feature-item {
+                padding: 0;
+                border: 0;
+            }
+
+            .feature-item .label {
+                display: block;
+                margin-bottom: 7px;
+                color: var(--ink);
+                font-size: 0.95rem;
+                font-weight: 700;
+                letter-spacing: 0;
+                text-transform: none;
+            }
+
+            .feature-item strong {
+                display: block;
+                margin-bottom: 4px;
+                color: var(--ink);
+                font-size: 0.98rem;
+            }
+
+            .feature-item p {
+                margin: 0;
+                color: var(--muted);
+                font-size: 0.92rem;
+                line-height: 1.75;
+            }
+
+            /* 開発環境テーブル */
+            .env-table {
+                margin-top: 14px;
+            }
+
+            .env-table .sheet-table {
+                min-width: 680px;
+            }
+
+            /* 動作デモ */
+            .demo-panel {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+                margin-top: 16px;
+            }
+
+            .demo-slot {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .demo-video {
+                max-width: 100%;
+                max-height: 540px;
+                border-radius: 8px;
+                background: #000;
+            }
+
+            /* リスト */
+            .feature-list {
+                margin: 10px 0 0;
+                padding-left: 1.2em;
+            }
+
+            .feature-list li+li {
+                margin-top: 5px;
+            }
+
+            /* コールアウト */
+            .callout {
+                margin-top: 14px;
+                padding: 14px 16px;
+                border-left: 3px solid var(--accent);
+                background: var(--accent-soft);
+            }
+
+            .callout p {
+                margin: 0;
+                font-size: 0.95rem;
+            }
+
+            /* Vibe Codingの学び */
+            .learning-grid {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 28px;
+                margin-top: 16px;
+            }
+
+            .learning-card {
+                padding: 0;
+                border: 0;
+                background: transparent;
+            }
+
+            .learning-card h3 {
+                margin: 0 0 8px;
+                font-size: 1rem;
+                color: var(--ink);
+            }
+
+            .learning-card p {
+                margin: 0;
+                color: var(--muted);
+                font-size: 0.92rem;
+            }
+
+            .note-box {
+                margin-top: 18px;
+                padding: 0;
+                border: 0;
+                background: transparent;
+            }
+
+            .ai-illustrations {
+                display: flex;
+                align-items: flex-end;
+                justify-content: flex-end;
+                gap: 10px;
+                margin-top: 8px;
+            }
+
+            .ai-illustration {
+                margin: 0;
+            }
+
+            .ai-illustration img {
+                display: block;
+                width: clamp(54px, 7vw, 76px);
+                height: auto;
+            }
+
+            /* Vibe Codingツール一覧 */
+            .tools-table {
+                margin-top: 16px;
+            }
+
+            .tools-table .sheet-table {
+                min-width: 760px;
+            }
+
+            .tools-table th,
+            .tools-table td {
+                border-left: 1px solid var(--grid);
+                vertical-align: top;
+            }
+
+            .tools-table th:first-child,
+            .tools-table td:first-child {
+                border-left: 0;
+                white-space: nowrap;
+                width: 190px;
+            }
+
+            .tools-table th:last-child,
+            .tools-table td:last-child {
+                width: 190px;
+            }
+
+            .tool-name-link {
+                color: var(--link);
+                font-weight: 700;
+                text-decoration: underline;
+                text-underline-offset: 2px;
+            }
+
+            .report a:focus-visible,
+            .term:focus-visible {
+                outline: 3px solid var(--focus-ring);
+                outline-offset: 3px;
+            }
+
+            /* フッター */
+            .final-note {
+                padding: 8px var(--gutter) 28px;
+                color: var(--muted);
+                background: #ffffff;
+                font-size: 0.88rem;
+                text-align: right;
+            }
+
+            .final-note p {
+                margin: 0;
+            }
+
+            /* ツールチップ */
+            .term {
+                border-bottom: 1px dashed var(--muted);
+                cursor: help;
+                position: relative;
+            }
+
+            .term-tooltip {
+                position: fixed;
+                width: min(260px, calc(100vw - 24px));
+                padding: 10px 12px;
+                border: 1px solid var(--grid-dark);
+                background: #ffffff;
+                color: var(--ink);
+                font-size: 0.82rem;
+                font-weight: 400;
+                line-height: 1.55;
+                letter-spacing: 0;
+                pointer-events: none;
+                opacity: 0;
+                visibility: hidden;
+                transition: opacity 0.12s, visibility 0.12s;
+                z-index: 1000;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                white-space: normal;
+                text-align: left;
+            }
+
+            .term-tooltip.is-visible {
+                opacity: 1;
+                visibility: visible;
+            }
+
+            .term-tooltip::before {
+                content: '';
+                position: absolute;
+                left: var(--tip-arrow-left, 50%);
+                transform: translateX(-50%);
+                border: 5px solid transparent;
+                bottom: -10px;
+                border-top-color: var(--grid-dark);
+            }
+
+            .term-tooltip.is-below::before {
+                top: -10px;
+                bottom: auto;
+                border-top-color: transparent;
+                border-bottom-color: var(--grid-dark);
+            }
+
+            /* レスポンシブ */
+            @media (max-width: 920px) {
+
+                .feature-row,
+                .learning-grid,
+                .demo-panel {
+                    grid-template-columns: 1fr;
+                }
+
+                .feature-row {
+                    gap: 16px 0;
+                }
+
+                .feature-item+.feature-item {
+                    padding-top: 16px;
+                }
+            }
+
+            @media (max-width: 640px) {
+                .page {
+                    width: 100%;
+                }
+
+                .report-hero,
+                .sheet-section,
+                .final-note {
+                    padding-left: 16px;
+                    padding-right: 16px;
+                }
+
+                .sheet-section {
+                    padding-top: 40px;
+                    padding-bottom: 40px;
+                }
+
+                .report-nav {
+                    padding-left: 16px;
+                    padding-right: 16px;
+                }
+
+                .report-nav a {
+                    padding: 0 12px;
+                }
+
+                .table-wrap {
+                    max-width: 100%;
+                    overflow-x: auto;
+                }
+
+                .env-table .sheet-table {
+                    min-width: 0;
+                }
+
+                .tools-table .sheet-table {
+                    min-width: 620px;
+                }
+
+                .report-hero h1 {
+                    font-size: 1.4rem;
+                }
+            }
+
+            @media (prefers-reduced-motion: reduce) {
+
+                *,
+                *::before,
+                *::after {
+                    scroll-behavior: auto !important;
+                    transition-duration: 0.01ms !important;
+                    animation-duration: 0.01ms !important;
+                    animation-iteration-count: 1 !important;
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+        <main class="page">
+            <article class="sheet report">
+
+                <header id="top" class="report-hero">
+                    <h1>2026年上期 個人目標 レポート</h1>
+                    <p class="lead">
+                        Swiftで<span class="term"
+                            data-tip="iOSやMacなど、各プラットフォーム向けに専用開発されたアプリ。ブラウザを経由せず端末の機能を直接使えるため、動作が速く通知なども活用しやすい。">ネイティブアプリ</span>を開発した内容と、
+                        AIを取り入れた新しい開発手法「<span class="term"
+                            data-tip="AIに自然言語で指示を出しながらコードを生成・修正していく開発スタイル。2025年以降、個人開発でも広く使われるようになった。">Vibe
+                            Coding</span>」への取り組みをまとめました。
+                    </p>
+                </header>
+
+                <nav class="report-nav" aria-label="ページ内ナビゲーション">
+                    <a href="#goal"><span class="nav-num">01</span>目標</a>
+                    <a href="#app"><span class="nav-num">02</span>アプリ概要</a>
+                    <a href="#environment"><span class="nav-num">03</span>開発環境</a>
+                    <a href="#demo"><span class="nav-num">04</span>動作デモ</a>
+                    <a href="#vibe-coding"><span class="nav-num">05</span>AI活用開発</a>
+                    <a href="#tools"><span class="nav-num">06</span>Vibe Codingツール</a>
+                    <a href="#summary"><span class="nav-num">07</span>まとめ</a>
+                    <a class="to-top" href="#top">↑ TOP</a>
+                </nav>
+
+                <section id="goal" class="sheet-section">
+                    <div class="section-heading">
+                        <span class="section-number">01</span>
+                        <h2>目標</h2>
+                    </div>
+                    <p>2026年上期の業績評価における目標として、<strong>「Swiftで開発したiOSアプリを作成し、GitHubにソースコードを公開する」</strong>を設定しました。</p>
+                    <p>ソースコードは <a href="https://github.com/asasuzu/kato-work/tree/main/2026-h1/when-did" target="_blank"
+                            rel="noopener">github.com/asasuzu/kato-work/tree/main/2026-h1/when-did</a> にて公開しています。</p>
+                    <div class="image-frame">
+                        <img src="goal-sheet.png" alt="2026年上期 目標シート">
+                    </div>
+                </section>
+
+                <section id="app" class="sheet-section">
+                    <div class="section-heading">
+                        <span class="section-number">02</span>
+                        <h2>アプリの概要</h2>
+                    </div>
+                    <p>
+                        本目標の成果物として、日数経過管理アプリ <strong>When Did</strong> を作成しました。
+                        一般的な「締め切りまでのカウントダウン」ではなく、<strong>カウントアップ<br>──つまり経過日数の確認を主役</strong>にした点が特徴です。
+                    </p>
+                    <p>
+                        想定しているユースケースは大きく2つあります。
+                    </p>
+                    <p>
+                        ひとつは、「最後に実施してから何日経ったか」を確認できれば十分なものです。美容室での縮毛矯正のように次回のタイミングを判断したい場合や、ピーリングのように頻度が高くなりすぎないよう管理したい場合など、必ず実施日が決まっているわけではなく、適切な間隔を保つために経過日数を確認したい用途がこれにあたります。
+                    </p>
+                    <p>
+                        もうひとつは、経過日数に加えて期限設定や通知が必要なものです。定期掃除や熱帯魚の水換えのように、一定のタイミングで必ず実施する必要がある作業がこれにあたります。
+                    </p>
+                </section>
+
+                <section id="environment" class="sheet-section">
+                    <div class="section-heading">
+                        <span class="section-number">03</span>
+                        <h2>開発環境</h2>
+                    </div>
+                    <p class="section-sub">SwiftUIを中心に、ローカル永続化を前提として構成しました。
+                    </p>
+
+                    <div class="table-wrap env-table">
+                        <table class="sheet-table">
+                            <tbody>
+                                <tr>
+                                    <th>言語</th>
+                                    <td>Swift 5</td>
+                                </tr>
+                                <tr>
+                                    <th>IDE</th>
+                                    <td><span class="term"
+                                            data-tip="Appleプラットフォーム向けアプリの開発・テスト・配布に使うAppleの開発環境。シミュレータやデバッグ機能も含まれる。">Xcode</span>
+                                        26.2</td>
+                                </tr>
+                                <tr>
+                                    <th>UIフレームワーク</th>
+                                    <td>SwiftUI
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>対応OS</th>
+                                    <td>iOS / iPadOS 26.1以降（iPhone・iPad）</td>
+                                </tr>
+                                <tr>
+                                    <th>データ管理</th>
+                                    <td>
+                                        <span class="term"
+                                            data-tip="Appleが提供するデータ永続化フレームワーク。アプリのデータをデバイス内に保存する仕組み。SwiftUIとの親和性が高い。">SwiftData</span>（ローカル保存）
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>通知</th>
+                                    <td>
+                                        <span class="term"
+                                            data-tip="Appleの通知フレームワーク。サーバーを介さず、アプリが端末内で予約した日時に通知を表示できる（ローカル通知）。">UserNotifications</span>（目安日の朝9時にローカル通知。設定時点ですでに当日9時を過ぎている場合、その日の通知は予約しない）
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3>無料アカウント（<span class="term"
+                            data-tip="Apple Developer Programに未加入のApple AccountでXcodeにサインインしたときの個人用開発チーム。個人利用の実機テストはできるが、プロビジョニングなどに期限・制限がある。">Personal
+                            Team</span>）の範囲と制約</h3>
+                    <p>
+                        開発は有料の<span class="term"
+                            data-tip="Appleの有料開発者プログラム。年額99ドル。App Store配布、iCloud（CloudKit）の利用、実機インストールの長期有効化などに必要。">Apple
+                            Developer Program</span>には加入せず、
+                        無料のApple ID（Personal Team）の範囲で行いました。ローカル通知までは問題なく実装できましたが、無料範囲ならではの制約がいくつか残ります。
+                    </p>
+                    <ul class="feature-list">
+                        <li>実機にインストールしたアプリは <strong>7日で起動できなくなり、継続利用には毎週再ビルドが必要</strong>。日常的に使うアプリとしては、正直かなり手間です。
+                        </li>
+                        <li>App Store や <span class="term"
+                                data-tip="公開前のアプリを内部・外部テスターに配布し、フィードバックを集めるためのAppleのベータテストサービス。">TestFlight</span>
+                            で配布できない（開発用の実機インストールのみ）。</li>
+                        <li>iCloud（<span class="term"
+                                data-tip="アプリのデータをiCloudに保存し、複数デバイスやWebで同期・共有するためのAppleの仕組み。">CloudKit</span>）が使えないため、デバイス間の同期が実装できない。
+                        </li>
+                    </ul>
+
+                    <div class="callout" style="margin-top: 16px;">
+                        <p>
+                            当初は iOS と macOS の間で iCloud
+                            同期するアプリを想定していましたが、同期機能は有料メンバーシップが前提となるため、個人利用でそこまで費用をかけるモチベーションはなく、今回は見送りました。
+                        </p>
+                        <p>
+                            そのため、今回はローカル保存＋ローカル通知までを実装範囲とし、「無料枠でどこまでできるのか」を実際に確かめられたこともひとつの収穫になりました。
+                        </p>
+                    </div>
+                </section>
+
+                <section id="demo" class="sheet-section">
+                    <div class="section-heading">
+                        <span class="section-number">04</span>
+                        <h2>動作デモ</h2>
+                    </div>
+                    <p class="section-sub">アプリの操作動画と、通知が届いた際の画面です。</p>
+
+                    <div class="demo-panel">
+                        <div class="demo-slot">
+                            <video class="demo-video" src="./when-did/when-did-demo.mp4" controls playsinline muted
+                                preload="metadata">
+                                お使いのブラウザは動画の再生に対応していません。
+                                <a href="./when-did/when-did-demo.mp4">動画を直接開く</a>
+                            </video>
+                        </div>
+                        <div class="demo-slot">
+                            <figure style="margin: 0; text-align: center;">
+                                <img src="./when-did/notification-screenshot.png" alt="目安日に届くローカル通知のスクリーンショット"
+                                    style="max-height: 540px; border-radius: 8px;">
+                                <figcaption style="margin-top: 8px; color: var(--muted); font-size: 0.88rem;">
+                                    目安日の朝9時に届くローカル通知</figcaption>
+                            </figure>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="vibe-coding" class="sheet-section">
+                    <div class="section-heading">
+                        <span class="section-number">05</span>
+                        <h2>AIを活用した開発</h2>
+                    </div>
+                    <p>
+                        アプリの開発には AI を積極的に活用しました。実装前は Swift や SwiftUI
+                        を一通り学ぶ必要があると思っていましたが、事前に深く勉強しなくても、個人利用には十分なアプリを形にできました。
+                    </p>
+
+                    <h3>Vibe Codingとは</h3>
+                    <p>
+                        Vibe Coding は、2025 年初頭に Andrej Karpathy 氏が提唱した開発スタイルで、自然言語で AI
+                        に指示を出しながらコードを生成・修正していく手法です。従来のように一行ずつコードを書くのではなく、「何を作りたいか」を会話形式で伝えながら実装を進める点が特徴です。Claude Code や
+                        GitHub Copilot、Codex などのツールの普及により、個人開発でも取り入れやすい方法になりました。
+                    </p>
+                    <p>
+                        今回の開発では、AI
+                        に実装方針やコード案を出してもらい、それを自分の要件と照らし合わせながら取捨選択して進めました。序盤は提案されたコードを自分でファイルに追加・修正しつつ動作を確認し、途中からは Claude
+                        Code、Codex のようなファイルを直接編集できるツールも使用しました。
+                    </p>
+
+                    <p>
+                        実装に入る前に AI
+                        と仕様について対話したことで、自分の中で曖昧だった部分を整理できました。「何を作るか」を言語化して確認するプロセスは、実際の開発現場と同じく重要だと感じました。一方で、ざっくりした指示だけでは意図した形にならないこともあり、AI
+                        に任せる部分と、自分で仕様を決める部分の線引きが大切だということも実感しました。
+                    </p>
+
+                    <div class="ai-illustrations" aria-label="AI開発で使ったツールのイメージイラスト">
+                        <figure class="ai-illustration">
+                            <img src="images/claude-code-character.png" alt="Claude Codeのイメージイラスト">
+                        </figure>
+                        <figure class="ai-illustration">
+                            <img src="images/chatgpt-character.png" alt="ChatGPTのイメージイラスト">
+                        </figure>
+                    </div>
+                </section>
+
+                <section id="tools" class="sheet-section">
+                    <div class="section-heading">
+                        <span class="section-number">06</span>
+                        <h2>Vibe Codingで作ったツール</h2>
+                    </div>
+                    <p>日常のちょっとした不便を解消するために、HTML / CSS / JavaScript を使った Web ツールもいくつか作成しました。</p>
+
+                    <div class="table-wrap tools-table">
+                        <table class="sheet-table">
+                            <thead>
+                                <tr>
+                                    <th>ツール名</th>
+                                    <th>作成した経緯</th>
+                                    <th>技術</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <a class="tool-name-link" href="./extras/chord-editor/index.html"
+                                            target="_blank" rel="noopener">コード譜エディタ</a>
+                                    </td>
+                                    <td>
+                                        趣味で楽器を弾くことがあり、歌詞の上にコードを記載した歌詞カードをもっと手軽に作れたらと思い、作りました。行間や印刷レイアウトを調整しやすくし、キー変更にも対応しています。
+                                    </td>
+                                    <td>HTML / CSS / JavaScript<br>JSON保存・読み込み</td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <a class="tool-name-link" href="./extras/cake-three-cut/index.html"
+                                            target="_blank" rel="noopener">ケーキ3等分判定ツール</a>
+                                    </td>
+                                    <td>
+                                        「非行少年はケーキを三等分にできない」という話を聞きました。私は今までの人生の中で、自分は非行少年ではない、と思い生きてきましたが、確信は持てませんでした。メモ用紙に円を描いてフリーハンドで三等分してみたものの、目の前の図が客観的に見て三等分なのかは分かりません。
+                                        それなら正確に測れるツールを作ってしまおう、ということで作成しました。
+                                    </td>
+                                    <td>HTML / CSS / JavaScript<br><span class="term"
+                                            data-tip="HTMLのcanvas要素にJavaScriptで図形・線・画像などを描画するためのWeb API。アニメーション、ゲーム、グラフ表示などに使われる。">Canvas
+                                            API</span></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <a class="tool-name-link" href="./extras/elevator-game/index.html"
+                                            target="_blank" rel="noopener">エレベーターゲーム</a>
+                                    </td>
+                                    <td>
+                                        会社のエレベーターが遅く感じることがあり、ちょっとしたストレスになっていました。
+                                        現実のエレベーターを改善することはできないので、せめてゲームの中では軽快に動かしてみたいと思い、作成しました。
+                                    </td>
+                                    <td>HTML / CSS / JavaScript<br>※PC専用（スマホ非対応）</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="summary" class="sheet-section">
+                    <div class="section-heading">
+                        <span class="section-number">07</span>
+                        <h2>まとめ・所感</h2>
+                    </div>
+
+                    <p>
+                        本目標を通じて、個人利用を想定した実用的なアプリを完成させることができました。
+                    </p>
+                    <p>
+                        あわせて、Vibe Coding を取り入れたことで、日常のちょっとした不便を短時間で解消するツールを気軽に作れるという体験も得られました。セキュリティや大規模公開を前提とするプロダクトには当然しっかりした設計が必要ですが、個人利用のツールであれば、AI を活用することで素早く形にできるのは大きな強みだと感じました。
+                    </p>
+                </section>
+
+                <footer class="final-note">
+                    <p>最終更新: 2026年7月 / 作成者: kato</p>
+                </footer>
+
+            </article>
+        </main>
+
+        <script>
+            (function () {
+                const nav = document.querySelector('.report-nav');
+                const links = Array.from(nav.querySelectorAll('a[href^="#"]'))
+                    .filter((a) => a.hash && a.hash !== '#top');
+                const sections = links
+                    .map((a) => document.querySelector(a.hash))
+                    .filter(Boolean);
+
+                // ヒーローが画面外に出たら（=ナビが固定されたら）影を付ける
+                const hero = document.querySelector('.report-hero');
+                new IntersectionObserver(([entry]) => {
+                    nav.classList.toggle('is-stuck', !entry.isIntersecting);
+                }).observe(hero);
+
+                // スクロール位置に応じて現在のセクションをハイライト
+                const setActive = () => {
+                    const line = nav.offsetHeight + 28;
+                    let current = sections[0];
+                    for (const s of sections) {
+                        if (s.getBoundingClientRect().top <= line) current = s;
+                    }
+                    const atBottom = window.innerHeight + window.scrollY
+                        >= document.documentElement.scrollHeight - 4;
+                    if (atBottom) current = sections[sections.length - 1];
+                    links.forEach((a) => {
+                        a.classList.toggle('is-active', a.hash === '#' + current.id);
+                    });
+                };
+                document.addEventListener('scroll', setActive, { passive: true });
+                window.addEventListener('resize', setActive);
+                setActive();
+
+                // スムーズスクロール（CSSより速め: 350ms）
+                nav.addEventListener('click', (e) => {
+                    const a = e.target.closest('a[href^="#"]');
+                    if (!a) return;
+                    const target = document.querySelector(a.hash);
+                    if (!target) return;
+                    e.preventDefault();
+                    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                    const start = window.scrollY;
+                    const end = target.getBoundingClientRect().top + start - nav.offsetHeight;
+                    if (reducedMotion) {
+                        window.scrollTo(0, end);
+                        return;
+                    }
+                    const duration = 350;
+                    const startTime = performance.now();
+                    const ease = (t) => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+                    const step = (now) => {
+                        const t = Math.min((now - startTime) / duration, 1);
+                        window.scrollTo(0, start + (end - start) * ease(t));
+                        if (t < 1) requestAnimationFrame(step);
+                    };
+                    requestAnimationFrame(step);
+                });
+
+                const tooltipTerms = Array.from(document.querySelectorAll('.term[data-tip]'));
+                const tooltip = document.createElement('div');
+                tooltip.className = 'term-tooltip';
+                tooltip.id = 'term-tooltip';
+                tooltip.setAttribute('role', 'tooltip');
+                tooltip.setAttribute('aria-hidden', 'true');
+                document.body.appendChild(tooltip);
+
+                let activeTerm = null;
+
+                const placeTooltip = () => {
+                    if (!activeTerm) return;
+
+                    tooltip.textContent = activeTerm.dataset.tip;
+                    tooltip.classList.add('is-visible');
+                    tooltip.style.left = '0px';
+                    tooltip.style.top = '0px';
+
+                    const margin = 12;
+                    const gap = 10;
+                    const termRect = activeTerm.getBoundingClientRect();
+                    const tipRect = tooltip.getBoundingClientRect();
+                    const placeAbove = termRect.top >= tipRect.height + gap + margin;
+                    const left = Math.min(
+                        Math.max(termRect.left + termRect.width / 2 - tipRect.width / 2, margin),
+                        window.innerWidth - tipRect.width - margin
+                    );
+                    const arrowLeft = termRect.left + termRect.width / 2 - left;
+                    const top = placeAbove
+                        ? termRect.top - tipRect.height - gap
+                        : termRect.bottom + gap;
+
+                    tooltip.classList.toggle('is-below', !placeAbove);
+                    tooltip.style.setProperty('--tip-arrow-left', `${arrowLeft}px`);
+                    tooltip.style.left = `${left}px`;
+                    tooltip.style.top = `${top}px`;
+                };
+
+                const showTooltip = (term) => {
+                    activeTerm = term;
+                    tooltip.setAttribute('aria-hidden', 'false');
+                    placeTooltip();
+                };
+
+                const hideTooltip = () => {
+                    activeTerm = null;
+                    tooltip.classList.remove('is-visible', 'is-below');
+                    tooltip.setAttribute('aria-hidden', 'true');
+                };
+
+                tooltipTerms.forEach((term) => {
+                    term.setAttribute('tabindex', '0');
+                    term.setAttribute('aria-describedby', 'term-tooltip');
+                    term.addEventListener('mouseenter', () => showTooltip(term));
+                    term.addEventListener('focus', () => showTooltip(term));
+                    term.addEventListener('mouseleave', hideTooltip);
+                    term.addEventListener('blur', hideTooltip);
+                });
+
+                document.addEventListener('scroll', placeTooltip, { passive: true });
+                document.querySelectorAll('.table-wrap').forEach((wrap) => {
+                    wrap.addEventListener('scroll', placeTooltip, { passive: true });
+                });
+                window.addEventListener('resize', placeTooltip);
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') hideTooltip();
+                });
+            })();
+        </script>
+
+
+
+    </body>
+
+</html>

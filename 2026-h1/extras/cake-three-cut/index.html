@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ケーキ3等分チャレンジ</title>
+  <link rel="icon" type="image/png" href="./favicon.png">
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <main class="app">
+    <section class="hero">
+      <h1>ケーキ3等分チャレンジ</h1>
+      <p class="lead">
+        円の中をフリーハンドで分けて、できるだけきれいな3等分を目指そう。
+      </p>
+    </section>
+
+    <section class="game-card">
+      <div class="canvas-header">
+        <h2>ケーキを切る</h2>
+        <p>マウス・指・ペンで自由に線を描けます。</p>
+      </div>
+
+      <div class="canvas-wrap">
+        <div class="cut-counter canvas-cut-counter" aria-live="polite">
+          <span>カット回数：</span><strong id="cutCount">0回</strong>
+        </div>
+        <canvas id="cakeCanvas" aria-label="ケーキを3等分するキャンバス"></canvas>
+      </div>
+
+      <div class="controls">
+        <button id="judgeButton" class="primary-button">判定する</button>
+        <button id="undoButton" class="secondary-button">1本戻す</button>
+        <button id="clearButton" class="secondary-button">やり直す</button>
+      </div>
+
+      <p class="hint">
+        線は何本でもOK。円の外にはみ出してもOK。最終的に分かれたエリアで判定します。
+        カット回数は、ケーキに触れた線だけを数えます。
+      </p>
+    </section>
+
+    <section id="resultCard" class="result-card hidden">
+      <div class="perfect-celebration" aria-hidden="true">
+        <span class="perfect-burst">PERFECT!</span>
+        <span class="confetti c1"></span>
+        <span class="confetti c2"></span>
+        <span class="confetti c3"></span>
+        <span class="confetti c4"></span>
+        <span class="confetti c5"></span>
+        <span class="confetti c6"></span>
+        <span class="confetti c7"></span>
+        <span class="confetti c8"></span>
+      </div>
+      <div class="result-title-row">
+        <h2>判定結果</h2>
+        <div id="rankBadge" class="rank-badge">-</div>
+      </div>
+
+      <div class="score-grid">
+        <div class="score-box">
+          <span class="score-label">均等度</span>
+          <strong id="balanceScore">-</strong>
+        </div>
+        <div class="score-box danger">
+          <span class="score-label">非行少年度</span>
+          <strong id="delinquencyScore">-</strong>
+        </div>
+        <div class="score-box">
+          <span class="score-label">検出エリア</span>
+          <strong id="areaCount">-</strong>
+        </div>
+        <div class="score-box">
+          <span class="score-label">カット回数</span>
+          <strong id="resultCutCount">0回</strong>
+        </div>
+      </div>
+
+      <div class="area-list-wrap">
+        <div class="area-list-title-row">
+          <h3>エリア割合</h3>
+          <p>番号は面積が大きい順です</p>
+        </div>
+        <ol id="areaList" class="area-list"></ol>
+      </div>
+
+      <p id="comment" class="comment"></p>
+    </section>
+  </main>
+
+  <script src="./script.js"></script>
+</body>
+</html>
