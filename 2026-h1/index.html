@@ -125,14 +125,6 @@
                 background: var(--accent);
             }
 
-            .report-nav .to-top {
-                margin-left: auto;
-                border-right: 0;
-                border-left: 1px solid var(--grid);
-                color: var(--muted);
-                font-weight: 500;
-            }
-
             /* 固定ナビにアンカーが隠れないようにする */
             .sheet-section {
                 scroll-margin-top: 47px;
@@ -177,6 +169,11 @@
                 max-width: 100%;
             }
 
+            /* 「カウントアップ──」のダッシュが行頭に落ちないようにする */
+            .nowrap {
+                white-space: nowrap;
+            }
+
             #vibe-coding h3 {
                 margin-bottom: 6px;
             }
@@ -185,16 +182,86 @@
                 margin-bottom: 2px;
             }
 
-            /* 目標シート画像 */
-            .image-frame {
-                margin: 16px 0 0;
+            #summary h3 {
+                margin-bottom: 6px;
             }
 
-            .image-frame img {
-                display: block;
-                max-width: 560px;
+            /* 目標シート（HTML/CSSで再現） */
+            .goal-sheet {
+                margin-top: 16px;
+                max-width: 640px;
+            }
+
+            .goal-sheet table {
                 width: 100%;
-                height: auto;
+                border-collapse: collapse;
+                background: #ffffff;
+                font-size: 0.92rem;
+            }
+
+            .goal-sheet th,
+            .goal-sheet td {
+                padding: 10px 14px;
+                border: 1px solid var(--grid-dark);
+                vertical-align: middle;
+                text-align: left;
+            }
+
+            .goal-sheet .gs-side {
+                width: 2.6em;
+                padding: 10px 8px;
+                background: var(--subhead-bg);
+                text-align: center;
+                writing-mode: vertical-rl;
+                text-orientation: upright;
+                letter-spacing: 0.25em;
+                font-weight: 700;
+            }
+
+            .goal-sheet .gs-head {
+                background: var(--subhead-bg);
+                text-align: center;
+                font-weight: 700;
+            }
+
+            .goal-sheet .gs-subhead {
+                width: 38%;
+                border-bottom: 1px dashed var(--grid-dark);
+                text-align: center;
+            }
+
+            .goal-sheet .gs-theme {
+                border-top: 1px dashed var(--grid-dark);
+            }
+
+            .gs-note {
+                margin: 6px 0 0;
+                color: var(--muted);
+                font-size: 0.82rem;
+            }
+
+            /* 達成状況 */
+            .achieve-table {
+                margin-top: 14px;
+            }
+
+            .achieve-table .sheet-table {
+                min-width: 640px;
+            }
+
+            .achieve-table .sheet-table td:nth-child(2) {
+                white-space: nowrap;
+            }
+
+            .status-badge {
+                display: inline-block;
+                padding: 2px 12px;
+                border-radius: 999px;
+                background: var(--accent-strong);
+                color: #ffffff;
+                font-size: 0.82rem;
+                font-weight: 700;
+                white-space: nowrap;
             }
 
             /* アプリ特徴 */
@@ -234,6 +301,46 @@
                 color: var(--muted);
                 font-size: 0.92rem;
                 line-height: 1.75;
+            }
+
+            /* アプリ画面スクリーンショット（画面遷移フロー） */
+            .screen-flow {
+                display: grid;
+                grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr;
+                align-items: start;
+                gap: 10px;
+                margin: 20px 0 24px;
+            }
+
+            .screen-flow figure {
+                margin: 0;
+                min-width: 0;
+                text-align: center;
+            }
+
+            .screen-flow img {
+                display: block;
+                width: 100%;
+                max-width: 200px;
+                margin: 0 auto;
+                border: 1px solid var(--grid);
+                border-radius: 12px;
+            }
+
+            .screen-flow figcaption {
+                margin-top: 8px;
+                color: var(--muted);
+                font-size: 0.85rem;
+                line-height: 1.5;
+            }
+
+            .flow-arrow {
+                align-self: center;
+                color: var(--accent);
+                font-size: 1.5rem;
+                font-weight: 700;
+                line-height: 1;
+                user-select: none;
             }
 
             /* 開発環境テーブル */
@@ -452,6 +559,18 @@
                     grid-template-columns: 1fr;
                 }
 
+                .screen-flow {
+                    grid-template-columns: 1fr;
+                    justify-items: center;
+                    gap: 6px;
+                }
+
+                .flow-arrow {
+                    align-self: auto;
+                    transform: rotate(90deg);
+                    padding: 8px 0;
+                }
+
                 .feature-row {
                     gap: 16px 0;
                 }
@@ -523,7 +642,7 @@
         <main class="page">
             <article class="sheet report">
 
-                <header id="top" class="report-hero">
+                <header class="report-hero">
                     <h1>2026年上期 個人目標 レポート</h1>
                     <p class="lead">
                         Swiftで<span class="term"
@@ -542,7 +661,6 @@
                     <a href="#vibe-coding"><span class="nav-num">05</span>AI活用開発</a>
                     <a href="#tools"><span class="nav-num">06</span>ツール・ゲーム</a>
                     <a href="#summary"><span class="nav-num">07</span>まとめ</a>
-                    <a class="to-top" href="#top">↑ TOP</a>
                 </nav>
 
                 <section id="goal" class="sheet-section">
@@ -551,10 +669,53 @@
                         <h2>目標</h2>
                     </div>
                     <p>2026年上期の業績評価における目標として、<strong>「Swiftで開発したiOSアプリを作成し、GitHubにソースコードを公開する」</strong>を設定しました。</p>
-                    <p>ソースコードは <a href="https://github.com/asasuzu/kato-work/tree/main/2026-h1/when-did" target="_blank"
-                            rel="noopener">github.com/asasuzu/kato-work/tree/main/2026-h1/when-did</a> にて公開しています。</p>
-                    <div class="image-frame">
-                        <img src="goal-sheet.png" alt="2026年上期 目標シート">
+                    <div class="goal-sheet">
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <th class="gs-side" rowspan="3" scope="rowgroup">業績評価</th>
+                                    <th class="gs-head" scope="col">目標（課題認識）</th>
+                                    <th class="gs-head" scope="col">成果イメージ（達成基準）</th>
+                                </tr>
+                                <tr>
+                                    <td class="gs-subhead">任意設定目標</td>
+                                    <td rowspan="2">Swiftで開発したiOSアプリを作成し、GitHubにソースコードを公開する</td>
+                                </tr>
+                                <tr>
+                                    <td class="gs-theme">アプリ開発スキルの向上</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p class="gs-note">※ 2026年上期の目標シートから該当欄を転記</p>
+                    </div>
+
+                    <h3>達成状況</h3>
+                    <div class="table-wrap achieve-table">
+                        <table class="sheet-table">
+                            <thead>
+                                <tr>
+                                    <th>達成基準</th>
+                                    <th>結果</th>
+                                    <th>成果物・根拠</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Swiftで開発したiOSアプリを作成する</td>
+                                    <td><span class="status-badge">達成</span></td>
+                                    <td>日数経過管理アプリ <strong>When Did</strong> を開発（<a href="#app">02
+                                            アプリの概要</a>・<a href="#demo">04 動作デモ</a>）</td>
+                                </tr>
+                                <tr>
+                                    <td>GitHubにソースコードを公開する</td>
+                                    <td><span class="status-badge">達成</span></td>
+                                    <td><a href="https://github.com/asasuzu/kato-work/tree/main/2026-h1/when-did"
+                                            target="_blank"
+                                            rel="noopener">github.com/asasuzu/kato-work/tree/main/2026-h1/when-did</a>
+                                        にて公開中</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </section>
 
@@ -565,8 +726,41 @@
                     </div>
                     <p>
                         本目標の成果物として、日数経過管理アプリ <strong>When Did</strong> を作成しました。
-                        一般的な「締め切りまでのカウントダウン」ではなく、<strong>カウントアップ<br>──つまり経過日数の確認を主役</strong>にした点が特徴です。
+                        一般的な「締め切りまでのカウントダウン」ではなく、<strong><span
+                                class="nowrap">カウントアップ──</span>つまり経過日数の確認を主役</strong>にした点が特徴です。
                     </p>
+                    <p>
+                        画面は「カテゴリ → 項目 → 項目詳細」の3階層で構成し、項目ごとに目安の間隔と通知を設定できます。
+                    </p>
+                    <div class="screen-flow" aria-label="アプリの画面遷移">
+                        <figure>
+                            <img src="./when-did/categories-screenshot.png"
+                                alt="カテゴリ一覧画面のスクリーンショット。生活と美容のカテゴリが登録され、カテゴリごとの累計金額が表示されている"
+                                loading="lazy">
+                            <figcaption>カテゴリ一覧</figcaption>
+                        </figure>
+                        <span class="flow-arrow" aria-hidden="true">›</span>
+                        <figure>
+                            <img src="./when-did/items-screenshot.png"
+                                alt="美容カテゴリの項目一覧のスクリーンショット。項目ごとに前回からの経過日数が表示されている"
+                                loading="lazy">
+                            <figcaption>項目一覧：前回からの経過日数</figcaption>
+                        </figure>
+                        <span class="flow-arrow" aria-hidden="true">›</span>
+                        <figure>
+                            <img src="./when-did/detail-screenshot.png"
+                                alt="項目詳細画面のスクリーンショット。経過145日、累計金額、実施履歴が表示されている"
+                                loading="lazy">
+                            <figcaption>項目詳細：履歴と累計金額</figcaption>
+                        </figure>
+                        <span class="flow-arrow" aria-hidden="true">›</span>
+                        <figure>
+                            <img src="./when-did/settings-screenshot.png"
+                                alt="項目の編集画面のスクリーンショット。目安の間隔と通知の有効化を設定できる"
+                                loading="lazy">
+                            <figcaption>項目の編集：目安と通知（例：エアコン清掃）</figcaption>
+                        </figure>
+                    </div>
                     <p>
                         想定しているユースケースは大きく2つあります。
                     </p>
@@ -666,7 +860,8 @@
 
                     <div class="demo-panel">
                         <div class="demo-slot">
-                            <video class="demo-video" src="./when-did/when-did-demo.mp4" controls playsinline muted
+                            <video class="demo-video" src="./when-did/when-did-demo.mp4"
+                                poster="./when-did/list-screenshot.png" controls playsinline muted
                                 preload="metadata">
                                 お使いのブラウザは動画の再生に対応していません。
                                 <a href="./when-did/when-did-demo.mp4">動画を直接開く</a>
@@ -677,7 +872,7 @@
                                 <img src="./when-did/notification-screenshot.png" alt="目安日に届くローカル通知のスクリーンショット"
                                     style="max-height: 540px; border-radius: 8px;">
                                 <figcaption style="margin-top: 8px; color: var(--muted); font-size: 0.88rem;">
-                                    目安日の朝9時に届くローカル通知</figcaption>
+                                    「エアコン清掃・30日ごと」の設定どおり、目安日の朝9時に届くローカル通知</figcaption>
                             </figure>
                         </div>
                     </div>
@@ -787,10 +982,20 @@
                     <p>
                         あわせて、Vibe Coding を取り入れたことで、日常のちょっとした不便を短時間で解消するツールを気軽に作れるという体験も得られました。セキュリティや大規模公開を前提とするプロダクトには当然しっかりした設計が必要ですが、個人利用のツールであれば、AI を活用することで素早く形にできるのは大きな強みだと感じました。
                     </p>
+
+                    <h3>業務への応用</h3>
+                    <p>
+                        今回の経験は個人開発にとどめず、業務にも活かしていきたいと考えています。AI
+                        を活用し開発スピードを高めることで、お客様のご要望を最適なルートで素早く具現化することを目指します。実装が速くなればその分、テストと検証に充てられる時間が増え、確認を重ねた品質の高い成果物を納品することができます。その結果、お客様のご要望に確実に応えられると考えています。
+                    </p>
+                    <p>
+                        一方で、スピードを優先するあまりセキュリティへの配慮が欠けることのないよう、AI
+                        が提案する設計やコードは内容を理解・確認した上で取り入れる姿勢を徹底していきます。
+                    </p>
                 </section>
 
                 <footer class="final-note">
-                    <p>最終更新: 2026年7月 / 作成者: kato</p>
+                    <p>最終更新: 2026年7月 / 作成者: 加藤</p>
                 </footer>
 
             </article>
@@ -800,7 +1005,7 @@
             (function () {
                 const nav = document.querySelector('.report-nav');
                 const links = Array.from(nav.querySelectorAll('a[href^="#"]'))
-                    .filter((a) => a.hash && a.hash !== '#top');
+                    .filter((a) => a.hash);
                 const sections = links
                     .map((a) => document.querySelector(a.hash))
                     .filter(Boolean);
