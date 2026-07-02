@@ -860,3 +860,47 @@ body {
   0%   { opacity: 1; transform: translate(0, 0) scale(1); }
   100% { opacity: 0; transform: translate(24px, -6px) scale(1.2); }
 }
+
+/* ── タッチ端末向けガード ──
+   レイアウトがPC向けのため、タッチ主体の端末では
+   ゲーム画面を覆って案内のみ表示する */
+#touch-guard {
+  display: none;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  #touch-guard {
+    display: flex;
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+    background: #f4f4f2;
+    padding: 24px;
+  }
+
+  #touch-guard .tg-inner {
+    max-width: 420px;
+    text-align: center;
+  }
+
+  #touch-guard .tg-icon {
+    font-size: 44px;
+    margin-bottom: 14px;
+  }
+
+  #touch-guard .tg-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 10px;
+  }
+
+  #touch-guard p {
+    margin: 0;
+    font-size: 13px;
+    color: #777;
+    line-height: 1.8;
+  }
+}
