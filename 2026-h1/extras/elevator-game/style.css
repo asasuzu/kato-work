@@ -211,15 +211,10 @@ body {
   height: var(--floor-h);
   border-bottom: 1px solid #ebebeb;
   position: relative;
-  cursor: pointer;
   user-select: none;
-  transition: background 0.1s;
 }
 
 .floor:last-child { border-bottom: none; }
-
-.floor:hover { background: #f4f9f6; }
-.floor:active { background: #eaf4ee; }
 
 .floor-num {
   width: var(--col-left);
@@ -260,7 +255,7 @@ body {
   padding: 3px 5px 5px;
   position: relative;
   animation: pax-appear 0.2s ease;
-  min-width: 28px;
+  min-width: 32px;
 }
 
 .pax-chip .pax-icon {
@@ -268,16 +263,18 @@ body {
   line-height: 1;
 }
 
-.pax-chip .dir-badge {
+/* 行き先階バッジ（↑↓の代わりに行き先を見せる） */
+.pax-chip .dest-badge {
   font-size: 9px;
   font-weight: 700;
   line-height: 1;
   margin-top: 2px;
-  color: #555;
+  padding: 1px 4px;
+  border-radius: 7px;
 }
 
-.pax-chip .dir-badge.up   { color: #1a8a4a; }
-.pax-chip .dir-badge.down { color: #2b6fc0; }
+.pax-chip .dest-badge.up   { color: #1a8a4a; background: #e6f5ee; }
+.pax-chip .dest-badge.down { color: #2b6fc0; background: #e7f0fb; }
 
 .pax-chip.vip {
   border-color: #e6c440;
@@ -336,7 +333,7 @@ body {
   bottom: 0;
   width: var(--elv-w);
   z-index: 3;
-  /* シャフト自体はクリックを透過させ、下の階クリックを邪魔しない */
+  /* シャフト自体はクリックを透過し、中のマス（.shaft-cell）だけ受ける */
   pointer-events: none;
 }
 
@@ -356,6 +353,54 @@ body {
 .shaft::before { left: 0; }
 .shaft::after  { right: 0; }
 
+/* 階ごとのクリックマス：ここをクリックしてその号機に指示を出す */
+.shaft-cell {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: var(--floor-h);
+  pointer-events: auto;
+  cursor: pointer;
+  z-index: 4;
+  transition: background 0.08s;
+}
+
+.shaft-cell::after {
+  content: attr(data-f) 'F';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  opacity: 0;
+  transition: opacity 0.08s;
+  pointer-events: none;
+}
+
+#shaft-0 .shaft-cell::after { color: #1a8a4a; }
+#shaft-1 .shaft-cell::after { color: #2b6fc0; }
+
+#shaft-0 .shaft-cell:hover { background: rgba(42, 168, 105, 0.16); }
+#shaft-1 .shaft-cell:hover { background: rgba(58, 123, 213, 0.16); }
+
+#shaft-0 .shaft-cell:active { background: rgba(42, 168, 105, 0.3); }
+#shaft-1 .shaft-cell:active { background: rgba(58, 123, 213, 0.3); }
+
+.shaft-cell:hover::after { opacity: 1; }
+
+/* 行き先マーカー：号機が向かっている階を常時表示する */
+#shaft-0 .shaft-cell.target {
+  box-shadow: inset 0 0 0 2px var(--col-a);
+  background: rgba(42, 168, 105, 0.1);
+}
+
+#shaft-1 .shaft-cell.target {
+  box-shadow: inset 0 0 0 2px var(--col-b);
+  background: rgba(58, 123, 213, 0.1);
+}
+
 .elevator {
   position: absolute;
   left: 2px;
@@ -371,22 +416,22 @@ body {
   gap: 1px;
   overflow: visible;
   z-index: 5;
-  cursor: pointer;
-  /* シャフトが pointer-events: none でも、かご自体はクリック可能にする */
-  pointer-events: auto;
+  /* クリックはかごを素通りして下のマスに届く（かご＝今いる階のマス） */
+  pointer-events: none;
 }
 
 /* 号機カラー */
 .elevator.elv-a { box-shadow: inset 0 0 0 2px var(--col-a); }
 .elevator.elv-b { box-shadow: inset 0 0 0 2px var(--col-b); }
 
-/* 選択中のかごを光らせる */
-.elevator.elv-a.selected { box-shadow: inset 0 0 0 2px var(--col-a), 0 0 10px rgba(42, 168, 105, 0.8); }
-.elevator.elv-b.selected { box-shadow: inset 0 0 0 2px var(--col-b), 0 0 10px rgba(58, 123, 213, 0.8); }
+/* 降車時のフラッシュ */
+@keyframes elv-flash {
+  0%   { filter: brightness(2.4); }
+  100% { filter: brightness(1); }
+}
 
-/* 急行走行中 */
-.elevator.express {
-  box-shadow: inset 0 0 0 2px #f5c518, 0 0 12px rgba(245, 197, 24, 0.9) !important;
+.elevator.flash {
+  animation: elv-flash 0.45s ease;
 }
 
 .elv-name {
@@ -438,19 +483,16 @@ body {
   width: 0;
 }
 
-/* ── 号機カード（右パネル） ── */
+/* ── 号機カード（右パネル・状態表示） ── */
 .elv-card {
   background: #fff;
   border-radius: 6px;
   padding: 10px 12px;
   border: 2px solid transparent;
-  cursor: pointer;
-  transition: border-color 0.12s, box-shadow 0.12s;
-  position: relative;
 }
 
-.elv-card.card-a.selected { border-color: var(--col-a); box-shadow: 0 0 8px rgba(42, 168, 105, 0.3); }
-.elv-card.card-b.selected { border-color: var(--col-b); box-shadow: 0 0 8px rgba(58, 123, 213, 0.3); }
+.elv-card.card-a { border-color: rgba(42, 168, 105, 0.35); }
+.elv-card.card-b { border-color: rgba(58, 123, 213, 0.35); }
 
 .card-head {
   display: flex;
@@ -490,21 +532,6 @@ body {
 .card-dir.up   { background: #e6f5ee; color: #1a8a4a; }
 .card-dir.down { background: #e7f0fb; color: #2b6fc0; }
 .card-dir.none { background: #f0f0f0; color: #999; }
-
-.card-selected-tag {
-  margin-left: auto;
-  font-size: 10px;
-  font-weight: 700;
-  color: #fff;
-  padding: 2px 8px;
-  border-radius: 10px;
-  display: none;
-}
-
-.card-a .card-selected-tag { background: var(--col-a); }
-.card-b .card-selected-tag { background: var(--col-b); }
-
-.elv-card.selected .card-selected-tag { display: inline-block; }
 
 .card-slots {
   display: grid;
@@ -570,7 +597,6 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
 }
 
 .card-cap {
@@ -586,51 +612,6 @@ body {
   color: #888;
 }
 
-/* 急行クールタイム */
-.card-express {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.exp-label {
-  font-size: 11px;
-  font-weight: 700;
-  color: #c9930a;
-  white-space: nowrap;
-  min-width: 92px;
-}
-
-.exp-label.cooling { color: #aaa; }
-
-.exp-bar-track {
-  flex: 1;
-  height: 5px;
-  background: #eee;
-  border-radius: 3px;
-  overflow: hidden;
-}
-
-.exp-bar-fill {
-  height: 100%;
-  background: #ccc;
-  border-radius: 3px;
-  transition: width 0.1s linear;
-}
-
-.exp-bar-fill.ready { background: #f5c518; }
-
-/* 無効操作のシェイク */
-@keyframes card-shake {
-  0%, 100% { transform: translateX(0); }
-  25%      { transform: translateX(-4px); }
-  75%      { transform: translateX(4px); }
-}
-
-.elv-card.shake {
-  animation: card-shake 0.12s 3;
-}
-
 #panel-note {
   font-size: 11px;
   color: #999;
@@ -639,6 +620,7 @@ body {
 }
 
 #panel-note b { color: #e53; }
+#panel-note b.note-combo { color: #e9a020; }
 
 /* ── 操作説明バー ── */
 #help-bar {
@@ -657,30 +639,6 @@ body {
 
 .help-item b {
   color: #1a1a1a;
-}
-
-/* ── Toast ── */
-#toast {
-  position: fixed;
-  left: 50%;
-  bottom: 28px;
-  transform: translateX(-50%) translateY(8px);
-  background: rgba(26, 26, 26, 0.92);
-  color: #fff;
-  font-size: 13px;
-  font-weight: 700;
-  padding: 9px 18px;
-  border-radius: 20px;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.15s, transform 0.15s;
-  z-index: 150;
-  white-space: nowrap;
-}
-
-#toast.show {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
 }
 
 /* ── Overlay (start / result) ── */
@@ -754,14 +712,6 @@ body {
 .ov-rules strong {
   color: #1a1a1a;
   font-weight: 700;
-}
-
-.ov-pc-note {
-  font-size: 11px;
-  color: #999;
-  background: #f5f5f5;
-  border-radius: 6px;
-  padding: 6px 14px;
 }
 
 .ov-best {
@@ -862,7 +812,7 @@ body {
 }
 
 .floor-pop .fp-main {
-  font-size: 17px;
+  font-size: 20px;
   font-weight: 700;
   color: #1a8a4a;
 }
@@ -871,6 +821,18 @@ body {
   font-size: 12px;
   font-weight: 700;
   color: #e9a020;
+}
+
+/* コンボが乗るほど派手に */
+.floor-pop.pop-lv2 .fp-main {
+  font-size: 25px;
+  color: #e9a020;
+}
+
+.floor-pop.pop-lv3 .fp-main {
+  font-size: 30px;
+  color: #e2571e;
+  text-shadow: 0 0 8px rgba(226, 87, 30, 0.35);
 }
 
 .floor-pop.miss .fp-main {
@@ -897,48 +859,4 @@ body {
 @keyframes drop-fade {
   0%   { opacity: 1; transform: translate(0, 0) scale(1); }
   100% { opacity: 0; transform: translate(24px, -6px) scale(1.2); }
-}
-
-/* ── タッチ端末向けガード ──
-   Shift＋クリック前提の操作のため、タッチ主体の端末では
-   ゲーム画面を覆って案内のみ表示する */
-#touch-guard {
-  display: none;
-}
-
-@media (hover: none) and (pointer: coarse) {
-  #touch-guard {
-    display: flex;
-    position: fixed;
-    inset: 0;
-    z-index: 10000;
-    align-items: center;
-    justify-content: center;
-    background: #f4f4f2;
-    padding: 24px;
-  }
-
-  #touch-guard .tg-inner {
-    max-width: 420px;
-    text-align: center;
-  }
-
-  #touch-guard .tg-icon {
-    font-size: 44px;
-    margin-bottom: 14px;
-  }
-
-  #touch-guard .tg-title {
-    font-size: 18px;
-    font-weight: 700;
-    color: #1a1a1a;
-    margin-bottom: 10px;
-  }
-
-  #touch-guard p {
-    margin: 0;
-    font-size: 13px;
-    color: #777;
-    line-height: 1.8;
-  }
 }

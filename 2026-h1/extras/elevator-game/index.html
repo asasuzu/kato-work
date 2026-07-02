@@ -19,7 +19,7 @@
         <div id="timer-wrap">
           <div id="timer-head">
             <span id="timer-label">残り</span>
-            <span id="timer-val">90</span>
+            <span id="timer-val">60</span>
             <span id="timer-unit">秒</span>
           </div>
           <div id="timer-bar-track">
@@ -45,11 +45,11 @@
     </div>
 
     <div id="main-row">
-      <!-- 左：建物全体ビュー（シャフト2本） -->
+      <!-- 左：建物全体ビュー（シャフト2本。各階のマスをクリックして直接指示する） -->
       <div id="building-outer">
         <div id="building"></div>
         <div class="shaft" id="shaft-0">
-          <div class="elevator elv-a" id="elv-0" data-e="0">
+          <div class="elevator elv-a" id="elv-0">
             <div class="door-left"></div>
             <div class="door-right"></div>
             <div class="elv-name">A</div>
@@ -58,7 +58,7 @@
           </div>
         </div>
         <div class="shaft" id="shaft-1">
-          <div class="elevator elv-b" id="elv-1" data-e="1">
+          <div class="elevator elv-b" id="elv-1">
             <div class="door-left"></div>
             <div class="door-right"></div>
             <div class="elv-name">B</div>
@@ -68,46 +68,37 @@
         </div>
       </div>
 
-      <!-- 右：号機カード（選択・状態表示） -->
+      <!-- 右：号機カード（状態表示） -->
       <div id="side-panel">
-        <div class="elv-card card-a selected" id="card-0" data-e="0">
+        <div class="elv-card card-a" id="card-0">
           <div class="card-head">
             <span class="card-name">A</span>
             <span class="card-floor" id="card-floor-0">1F</span>
             <span class="card-dir none" id="card-dir-0">停車</span>
-            <span class="card-selected-tag" id="seltag-0">操作中</span>
           </div>
           <div class="card-slots" id="card-slots-0"></div>
           <div class="card-foot">
             <span class="card-cap" id="card-cap-0">0 / 4</span>
             <span class="card-status" id="card-status-0">待機中</span>
           </div>
-          <div class="card-express">
-            <span class="exp-label" id="exp-label-0">⚡ 急行OK</span>
-            <div class="exp-bar-track"><div class="exp-bar-fill" id="exp-bar-0" style="width:100%"></div></div>
-          </div>
         </div>
 
-        <div class="elv-card card-b" id="card-1" data-e="1">
+        <div class="elv-card card-b" id="card-1">
           <div class="card-head">
             <span class="card-name">B</span>
             <span class="card-floor" id="card-floor-1">5F</span>
             <span class="card-dir none" id="card-dir-1">停車</span>
-            <span class="card-selected-tag" id="seltag-1">操作中</span>
           </div>
           <div class="card-slots" id="card-slots-1"></div>
           <div class="card-foot">
             <span class="card-cap" id="card-cap-1">0 / 4</span>
             <span class="card-status" id="card-status-1">待機中</span>
           </div>
-          <div class="card-express">
-            <span class="exp-label" id="exp-label-1">⚡ 急行OK</span>
-            <div class="exp-bar-track"><div class="exp-bar-fill" id="exp-bar-1" style="width:100%"></div></div>
-          </div>
         </div>
 
         <div id="panel-note">
-          連続で運ぶとコンボで倍率UP。<br>
+          連続で運ぶと<b class="note-combo">コンボ</b>で倍率UP。<br>
+          同じ階でまとめて降ろすと<b class="note-combo">ボーナス</b>。<br>
           客を待たせすぎると <b>ミス</b>（スコア減・コンボ消滅）。
         </div>
       </div>
@@ -115,13 +106,11 @@
 
     <!-- 操作説明（常時表示） -->
     <div id="help-bar">
-      <span class="help-item"><b>🖱 階クリック</b>：通常移動（途中階で同方向の客を自動で拾う）</span>
-      <span class="help-item"><b>⇧ Shift＋クリック</b>：急行で直行（クールタイム8秒）</span>
-      <span class="help-item"><b>A / B キー</b>：号機切替（カードやかごのクリックでも可）</span>
+      <span class="help-item"><b>🖱 A/Bレーンの階をクリック</b>：その号機が移動（移動中でも行き先変更OK）</span>
+      <span class="help-item"><b>🚪 今いる階をクリック</b>：その場で乗降</span>
+      <span class="help-item"><b>👥 数字は行き先階</b>：同じ階でまとめて降ろすとボーナス</span>
     </div>
   </div>
-
-  <div id="toast"></div>
 
   <!-- スタート / リザルト画面（共用オーバーレイ） -->
   <div id="overlay">
@@ -129,14 +118,13 @@
       <div id="screen-start" class="screen">
         <div class="ov-title">エレベーターさばき</div>
         <ul class="ov-rules">
-          <li><strong>A / B キー</strong>（またはクリック）で操作する号機を選ぶ</li>
-          <li><strong>階をクリック</strong>で通常移動。途中階で同方向の客を自動で拾う</li>
-          <li><strong>Shift＋クリック</strong>で急行。直行で速いがクールタイム8秒</li>
+          <li><strong>A / B それぞれのレーン</strong>の行きたい階をクリックすると、その号機が動く</li>
+          <li><strong>移動中でもクリックで行き先を変更</strong>できる。途中階で同方向の客は自動で拾う</li>
+          <li>待ち客の数字は<strong>行き先階</strong>。同じ階でまとめて降ろすと<strong>ボーナス</strong></li>
           <li>連続で運ぶと<strong>コンボ</strong>でスコア倍率アップ（最大×3）</li>
           <li>待たせすぎた客は怒って帰る＝<strong>ミス</strong>（−50点・コンボ消滅）</li>
-          <li>制限時間 <strong>90秒</strong>。2台をフル回転させよう</li>
+          <li>制限時間 <strong>60秒</strong>。2台をフル回転させよう</li>
         </ul>
-        <div class="ov-pc-note">🖥️ このゲームはPC専用です（スマートフォン・タブレット非対応）</div>
         <div class="ov-best">自己ベスト <span id="best-start">0</span> 点</div>
         <button id="start-btn" class="ov-btn">▶ スタート</button>
       </div>
@@ -152,19 +140,6 @@
         <div id="result-best" class="ov-best"><span id="best-label">自己ベスト</span> <span id="best-result">0</span> 点</div>
         <button id="retry-btn" class="ov-btn">もう一回</button>
       </div>
-    </div>
-  </div>
-
-  <!-- タッチ端末ではゲームを覆って案内のみ表示する（CSSのメディアクエリで切替） -->
-  <div id="touch-guard">
-    <div class="tg-inner">
-      <div class="tg-icon">🖥️</div>
-      <div class="tg-title">このゲームはPC専用です</div>
-      <p>
-        Shiftキーを使った操作（急行）があるため、<br>
-        スマートフォン・タブレットには対応していません。<br>
-        PCのブラウザでお楽しみください。
-      </p>
     </div>
   </div>
 

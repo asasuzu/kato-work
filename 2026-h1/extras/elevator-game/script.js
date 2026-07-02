@@ -1,17 +1,15 @@
 const FLOORS = 10;
 const FLOOR_H = 54;
 const MAX_CAPACITY = 4;
+const ELEVATOR_COUNT = 2;
 
-const GAME_DURATION_MS = 90000;     // 制限時間 90秒
+const GAME_DURATION_MS = 60000;     // 制限時間 60秒
 const CLOCK_TICK_MS = 100;
 const STRESS_TICK_MS = 250;
 const WAIT_PATIENCE_MS = 14000;     // 待ち客が怒って帰るまで（VIPは短い）
 const VIP_PATIENCE_RATE = 0.65;
 
-// 移動速度（1階あたり）
-const NORMAL_MS = 280;              // 通常移動
-const EXPRESS_MS = 110;             // 急行（直行）
-const EXPRESS_CD_MS = 8000;         // 急行クールタイム
+const MOVE_MS = 230;                // 移動速度（1階あたり）
 
 // 乗降アニメーションの各フェーズ時間
 const DOOR_MS = 200;   // ドア開閉
@@ -30,6 +28,7 @@ const MAX_WAIT_PER_FLOOR = 6;
 const BASE_POINT = 100;
 const VIP_POINT = 250;
 const MISS_PENALTY = 50;
+const MULTI_DROP_BONUS = 50;        // 同時降車ボーナス（2人目以降1人ごと）
 const COMBO_WINDOW_MS = 7000;       // この間に次を運べばコンボ継続
 const COMBO_STEP = 0.2;             // 1コンボごとの倍率上昇
 const COMBO_MAX_MULT = 3;
@@ -58,18 +57,16 @@ let passengerIdCounter = 0;
 let floorPassengers = {};
 
 let elevators = [];
-let selected = 0;
 
 function newElevator(i, name, startFloor) {
   return {
     i, name,
     floor: startFloor,
     pax: [],
-    state: 'idle',   // idle | moving | doors
+    state: 'idle',        // idle | moving | doors
     dir: 0,
     target: null,
-    express: false,
-    cdLeft: 0,
+    pendingTarget: null,  // ドア開閉中に受け付けた次の行き先
     timer: null
   };
 }
@@ -142,7 +139,6 @@ function resetState() {
   floorPassengers = {};
 
   elevators = [newElevator(0, 'A', 1), newElevator(1, 'B', 5)];
-  selectElevator(0);
 }
 
 function refreshAll() {
@@ -152,7 +148,7 @@ function refreshAll() {
     setCarOpen(e, false);
     positionElevator(e, false);
     renderCard(e);
-    renderExpress(e);
+    updateTargetMarker(e);
   });
 }
 
@@ -192,14 +188,6 @@ function tickClock() {
     return;
   }
   updateTimerDisplay();
-
-  // 急行クールタイム回復
-  elevators.forEach(e => {
-    if (e.cdLeft > 0) {
-      e.cdLeft = Math.max(0, e.cdLeft - CLOCK_TICK_MS);
-      renderExpress(e);
-    }
-  });
 
   // コンボは時間切れで消える
   if (combo > 0) {
@@ -260,7 +248,7 @@ function updateScoreboard() {
   comboFill.style.width = combo > 0 ? `${(comboLeftMs / COMBO_WINDOW_MS) * 100}%` : '0%';
 }
 
-/* ───────────── 盤面（建物） ───────────── */
+/* ───────────── 盤面（建物・シャフト） ───────────── */
 
 function buildFloors() {
   const building = document.getElementById('building');
@@ -274,96 +262,101 @@ function buildFloors() {
       <div class="floor-num">${f}<span>F</span></div>
       <div class="floor-passengers" id="fp-${f}"></div>
     `;
-    row.addEventListener('click', (ev) => onFloorClick(f, ev.shiftKey));
     building.appendChild(row);
     floorPassengers[f] = [];
+  }
+}
+
+// 各シャフトに階ごとのクリックマスを敷く（起動時に1回だけ）
+function buildShaftCells() {
+  for (let i = 0; i < ELEVATOR_COUNT; i++) {
+    const shaft = document.getElementById(`shaft-${i}`);
+    for (let f = 1; f <= FLOORS; f++) {
+      const cell = document.createElement('div');
+      cell.className = 'shaft-cell';
+      cell.id = `cell-${i}-${f}`;
+      cell.dataset.f = f;
+      cell.style.bottom = ((f - 1) * FLOOR_H) + 'px';
+      cell.addEventListener('click', () => commandElevator(i, f));
+      shaft.appendChild(cell);
+    }
   }
 }
 
 function positionElevator(e, animate) {
   const elv = document.getElementById(`elv-${e.i}`);
   const bottom = (e.floor - 1) * FLOOR_H + 3;
-  const ms = e.express ? EXPRESS_MS : NORMAL_MS;
-  elv.style.transition = animate ? `bottom ${ms / 1000}s linear` : 'none';
+  elv.style.transition = animate ? `bottom ${MOVE_MS / 1000}s linear` : 'none';
   elv.style.bottom = bottom + 'px';
   document.getElementById(`elv-floor-${e.i}`).textContent = `${e.floor}F`;
   document.getElementById(`card-floor-${e.i}`).textContent = `${e.floor}F`;
 }
 
-/* ───────────── 操作：号機選択 ───────────── */
+/* ───────────── 操作：シャフトのマスをクリックで指示 ─────────────
+   選択の概念はなく、A/Bどちらのレーンをクリックしたかで号機が決まる。
+   移動中は行き先を上書き（リターゲット）、ドア開閉中は次の行き先として
+   予約し、どの状態でもクリックが無駄にならないようにする */
 
-function selectElevator(i) {
-  selected = i;
-  elevators.forEach(e => {
-    document.getElementById(`elv-${e.i}`).classList.toggle('selected', e.i === i);
-    document.getElementById(`card-${e.i}`).classList.toggle('selected', e.i === i);
-  });
-}
-
-/* ───────────── 操作：階クリックで移動 ───────────── */
-
-function onFloorClick(floor, isExpress) {
+function commandElevator(i, floor) {
   if (!isRunning) return;
-  const e = elevators[selected];
+  const e = elevators[i];
 
-  if (e.state !== 'idle') {
-    toast(`${e.name}号機は動作中です（A/Bキーで切替）`);
-    shakeCard(e);
+  if (e.state === 'doors') {
+    e.pendingTarget = floor;
+    updateTargetMarker(e);
     return;
   }
 
+  if (e.state === 'moving') {
+    if (floor === e.target) return;
+    e.target = floor;
+    setStatus(e, `${floor}F へ移動中`);
+    renderCard(e);
+    updateTargetMarker(e);
+    return; // 進行中の stepMove が新しい行き先を拾う
+  }
+
+  // idle
   if (floor === e.floor) {
-    // 今いる階をクリック＝その場で乗降
-    doorCycle(e, true);
+    doorCycle(e, true); // 今いる階＝その場で乗降
     return;
   }
 
-  if (isExpress) {
-    if (e.cdLeft > 0) {
-      toast(`${e.name}号機の急行はクールタイム中（あと${Math.ceil(e.cdLeft / 1000)}秒）`);
-      shakeCard(e);
-      return;
-    }
-    e.cdLeft = EXPRESS_CD_MS;
-    renderExpress(e);
-  }
-
-  e.dir = floor > e.floor ? 1 : -1;
   e.target = floor;
-  e.express = isExpress;
   e.state = 'moving';
-
-  const elvEl = document.getElementById(`elv-${e.i}`);
-  elvEl.classList.toggle('express', isExpress);
-  document.getElementById(`elv-target-${e.i}`).textContent = `▸${floor}`;
-
-  setStatus(e, isExpress ? `急行 ${floor}F へ` : `${floor}F へ移動中`);
+  setStatus(e, `${floor}F へ移動中`);
   renderCard(e);
+  updateTargetMarker(e);
   stepMove(e);
 }
 
 // 1階ぶん移動し、アニメーション完了後に到着・途中停車を判定する。
-// 呼ばれた瞬間に動き出すので、クリックから移動開始までのラグはない。
+// 方向は毎ステップ target から計算し直すので、リターゲットで逆方向を
+// 指示されても次の階で自然に折り返す。
 function stepMove(e) {
   if (!isRunning) return;
 
+  e.dir = e.target > e.floor ? 1 : -1;
   e.floor += e.dir;
   positionElevator(e, true);
+  renderCard(e);
 
-  const ms = e.express ? EXPRESS_MS : NORMAL_MS;
   e.timer = setTimeout(() => {
     if (!isRunning) return;
 
     if (e.floor === e.target) {
       // 目的階に到着
       doorCycle(e, true);
-    } else if (!e.express && shouldStopHere(e)) {
-      // 通常移動のみ：途中階で乗降のため停車
-      doorCycle(e, false);
+      return;
+    }
+    // 次の進行方向を確定してから途中停車を判定する
+    e.dir = e.target > e.floor ? 1 : -1;
+    if (shouldStopHere(e)) {
+      doorCycle(e, false); // 途中階で乗降のため停車
     } else {
       stepMove(e);
     }
-  }, ms);
+  }, MOVE_MS);
 }
 
 // 途中停車の条件：降りる客がいる or 同方向の待ち客を乗せられる
@@ -380,7 +373,7 @@ function paxDir(p) {
 
 /* ───────────── 乗降（自動ドアサイクル） ───────────── */
 
-// final=true: 目的階（誰でも乗れる・終了後は待機）
+// final=true: 目的階（誰でも乗れる）
 // final=false: 途中階（同方向の客のみ乗せて続行）
 function doorCycle(e, final) {
   e.state = 'doors';
@@ -400,26 +393,33 @@ function doorCycle(e, final) {
     renderCard(e, { entering: boarded.map(p => p.id) });
     renderFloorPassengers(floor);
 
-    // ③ ドアを閉めて出発 or 待機
+    // ③ ドアを閉めて、次の行き先へ出発 or 待機
     e.timer = setTimeout(() => {
       if (!isRunning) return;
       setCarOpen(e, false);
 
       e.timer = setTimeout(() => {
         if (!isRunning) return;
-        if (final) {
+
+        // ドア開閉中の予約 > 続行中の目的階 の優先で次を決める
+        const next = e.pendingTarget != null
+          ? e.pendingTarget
+          : (final ? null : e.target);
+        e.pendingTarget = null;
+
+        if (next == null || next === e.floor) {
           e.state = 'idle';
           e.dir = 0;
           e.target = null;
-          e.express = false;
-          document.getElementById(`elv-${e.i}`).classList.remove('express');
-          document.getElementById(`elv-target-${e.i}`).textContent = '';
           setStatus(e, '待機中');
           renderCard(e);
+          updateTargetMarker(e);
         } else {
+          e.target = next;
           e.state = 'moving';
-          setStatus(e, `${e.target}F へ移動中`);
+          setStatus(e, `${next}F へ移動中`);
           renderCard(e);
+          updateTargetMarker(e);
           stepMove(e);
         }
       }, DOOR_MS);
@@ -463,8 +463,20 @@ function dropPassengers(e) {
     animateDrop(floor, p.icon, index);
   });
 
+  // 同じ階でまとめて降ろすとボーナス
+  let bonus = 0;
+  if (dropped.length >= 2) {
+    bonus = MULTI_DROP_BONUS * (dropped.length - 1);
+    score += bonus;
+  }
+
+  flashElevator(e);
   updateScoreboard();
-  showFloorPop(floor, `+${pts}`, combo >= 2 ? `COMBO ×${combo}` : null);
+
+  const subs = [];
+  if (bonus > 0) subs.push(`👥まとめ降車 +${bonus}`);
+  if (combo >= 2) subs.push(`COMBO ×${combo}`);
+  showFloorPop(floor, `+${pts + bonus}`, subs.join('　'), false, combo);
 }
 
 function animateDrop(floor, icon, index) {
@@ -568,7 +580,7 @@ function tickStress() {
    降車アニメ用チップの破棄を毎tick引き起こすため、
    チップ要素は客ごとに使い回し、増減した分だけDOMを更新する */
 
-// 行き先は隠す。↑↓の方向ヒントだけ見せる。
+// 行き先階を表示して「まとめて運ぶ」判断材料にする
 function createPaxChip(p) {
   const dir = paxDir(p);
   const chip = document.createElement('div');
@@ -576,7 +588,7 @@ function createPaxChip(p) {
   chip.id = `chip-${p.id}`;
   chip.innerHTML = `
     <span class="pax-icon">${p.icon}</span>
-    <div class="dir-badge ${dir > 0 ? 'up' : 'down'}">${dir > 0 ? '↑' : '↓'}</div>
+    <div class="dest-badge ${dir > 0 ? 'up' : 'down'}">${p.dest}F</div>
     <div class="stress-bar"><div class="stress-fill"></div></div>
   `;
   return chip;
@@ -625,7 +637,17 @@ function renderFloorPassengers(floor) {
   }
 }
 
-/* ───────────── 描画：号機カード ───────────── */
+/* ───────────── 描画：行き先マーカー・号機カード ───────────── */
+
+// シャフト上に「その号機がどこへ向かっているか」を常時表示する
+function updateTargetMarker(e) {
+  const t = e.pendingTarget != null ? e.pendingTarget : e.target;
+  for (let f = 1; f <= FLOORS; f++) {
+    const cell = document.getElementById(`cell-${e.i}-${f}`);
+    if (cell) cell.classList.toggle('target', t === f);
+  }
+  document.getElementById(`elv-target-${e.i}`).textContent = t != null ? `▸${t}` : '';
+}
 
 function renderCard(e, opts = {}) {
   const entering = new Set(opts.entering || []);
@@ -659,39 +681,29 @@ function renderCard(e, opts = {}) {
   else { dirEl.textContent = '停車'; dirEl.classList.add('none'); }
 }
 
-function renderExpress(e) {
-  const bar = document.getElementById(`exp-bar-${e.i}`);
-  const label = document.getElementById(`exp-label-${e.i}`);
-  const pct = ((EXPRESS_CD_MS - e.cdLeft) / EXPRESS_CD_MS) * 100;
-  bar.style.width = pct + '%';
-  bar.classList.toggle('ready', e.cdLeft <= 0);
-  if (e.cdLeft > 0) {
-    label.textContent = `⚡ 急行 あと${Math.ceil(e.cdLeft / 1000)}秒`;
-    label.classList.add('cooling');
-  } else {
-    label.textContent = '⚡ 急行OK';
-    label.classList.remove('cooling');
-  }
-}
-
 function setStatus(e, txt) {
   document.getElementById(`card-status-${e.i}`).textContent = txt;
 }
 
-function shakeCard(e) {
-  const card = document.getElementById(`card-${e.i}`);
-  card.classList.remove('shake');
-  void card.offsetWidth; // reflow でアニメーション再生
-  card.classList.add('shake');
+/* ───────────── 演出 ───────────── */
+
+// 降車があった号機を一瞬光らせる
+function flashElevator(e) {
+  const el = document.getElementById(`elv-${e.i}`);
+  el.classList.remove('flash');
+  void el.offsetWidth; // reflow でアニメーション再生
+  el.classList.add('flash');
 }
 
-/* ───────────── ポップアップ・トースト ───────────── */
-
-// 建物内の該当階の横に得点ポップを出す
-function showFloorPop(floor, mainTxt, subTxt, isMiss = false) {
+// 建物内の該当階の横に得点ポップを出す。コンボが乗るほど派手になる
+function showFloorPop(floor, mainTxt, subTxt, isMiss = false, comboLv = 0) {
   const outer = document.getElementById('building-outer');
   const pop = document.createElement('div');
   pop.className = 'floor-pop' + (isMiss ? ' miss' : '');
+  if (!isMiss) {
+    if (comboLv >= 8) pop.classList.add('pop-lv3');
+    else if (comboLv >= 4) pop.classList.add('pop-lv2');
+  }
   pop.innerHTML = subTxt
     ? `<span class="fp-main">${mainTxt}</span><span class="fp-sub">${subTxt}</span>`
     : `<span class="fp-main">${mainTxt}</span>`;
@@ -700,34 +712,10 @@ function showFloorPop(floor, mainTxt, subTxt, isMiss = false) {
   setTimeout(() => pop.remove(), 1000);
 }
 
-let toastTimer = null;
-function toast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 1600);
-}
-
 /* ───────────── 起動 ───────────── */
 
 document.getElementById('start-btn').addEventListener('click', startGame);
 document.getElementById('retry-btn').addEventListener('click', startGame);
 
-// 号機選択：かご・カードのクリック
-document.querySelectorAll('.elevator, .elv-card').forEach(el => {
-  el.addEventListener('click', (ev) => {
-    ev.stopPropagation();
-    selectElevator(parseInt(el.dataset.e, 10));
-  });
-});
-
-// 号機選択：キーボード（A/B または 1/2）
-document.addEventListener('keydown', (ev) => {
-  if (!isRunning) return;
-  const k = ev.key.toLowerCase();
-  if (k === 'a' || k === '1') selectElevator(0);
-  else if (k === 'b' || k === '2') selectElevator(1);
-});
-
+buildShaftCells();
 showStart();
