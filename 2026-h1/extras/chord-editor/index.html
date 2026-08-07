@@ -11,7 +11,7 @@
   <header class="app-header no-print">
     <div>
       <h1>コード譜PDFエディタ</h1>
-      <p>スペースでコード位置を調整して、PDFで崩れにくく出力できます</p>
+      <p>歌詞を貼り付けて、プレビューの上でコードを置いていきます</p>
     </div>
   </header>
 
@@ -47,38 +47,17 @@
         </select>
       </label>
 
-      <div class="mode-switch">
-        <button id="textModeBtn" class="active" type="button">一括テキストモード</button>
-        <button id="blockModeBtn" type="button">ブロック編集モード</button>
-      </div>
+      <h2>歌詞</h2>
 
-      <section id="textEditorArea">
-        <h2>一括テキスト</h2>
-        <p class="help">
-          ルール：コード行 → 歌詞行 → 空行 → コード行 → 歌詞行
-        </p>
+      <p class="help">
+        1行 = 1フレーズ。空行を入れるとそこが「かたまりの区切り」になり、2段組みのときに段の途中で割れなくなります。
+      </p>
 
-        <textarea id="bulkTextInput" spellcheck="false"></textarea>
+      <textarea id="lyricsInput" spellcheck="false" placeholder="歌詞をそのまま貼り付けてください"></textarea>
 
-        <div class="button-row">
-          <button id="formatTextBtn" type="button">整形する</button>
-          <button id="applyBulkBtn" type="button">プレビューに反映</button>
-        </div>
-      </section>
-
-      <section id="blockEditorArea" class="hidden">
-        <h2>ブロック編集</h2>
-        <p class="help">
-          1ブロック = コード行 + 歌詞行
-        </p>
-
-        <div id="blocksContainer"></div>
-
-        <div class="button-row">
-          <button id="addBlockBtn" type="button">行を追加</button>
-          <button id="applyBlocksBtn" type="button">プレビューに反映</button>
-        </div>
-      </section>
+      <p class="help">
+        コードはここでは入力しません。右のプレビューで、歌詞の上の帯をクリックして置きます。
+      </p>
     </section>
 
     <section class="panel no-print">
@@ -126,6 +105,18 @@
       </p>
 
       <h2>印刷設定</h2>
+
+      <label class="field">
+        <span>段組み</span>
+        <select id="columnsInput">
+          <option value="1" selected>1段</option>
+          <option value="2">2段</option>
+        </select>
+      </label>
+
+      <p class="help">
+        改行が多い曲は2段にすると紙の右側が埋まり、枚数が半分ほどになります。
+      </p>
 
       <label class="field">
         <span>印刷レイアウト</span>
@@ -185,9 +176,14 @@
     <section class="preview-wrapper">
       <div class="preview-toolbar no-print">
         <h2>プレビュー</h2>
+        <p class="preview-hint">
+          歌詞の上の帯をクリック → コード名を打つ → <kbd>Enter</kbd>で確定。<kbd>←</kbd><kbd>→</kbd><kbd>↑</kbd><kbd>↓</kbd>なら閉じずに隣のマスへ移れるので、続けて入力できます。置いたコードはドラッグで移動、空にして確定すると消えます。
+        </p>
       </div>
 
-      <article id="printArea" class="print-area print-area-a4"></article>
+      <div class="preview-stage">
+        <article id="printArea" class="print-area print-area-a4"></article>
+      </div>
     </section>
   </main>
 

@@ -4,6 +4,12 @@
   --chord-lyric-gap: 2px;
   --block-gap: 18px;
   --letter-spacing: 0px;
+  --columns: 1;
+  --column-gap: 10mm;
+  /* 用紙1枚の高さ。実際の値はscript.jsから入る（ページ割りの計算と揃えるため） */
+  --page-height: 296.5mm;
+  --sheet-font: system-ui, -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", "Segoe UI", sans-serif;
+  --accent: #2563eb;
 }
 
 * {
@@ -35,9 +41,9 @@ body {
 
 .app-layout {
   display: grid;
-  grid-template-columns: 360px 320px 1fr;
-  gap: 16px;
-  padding: 16px;
+  grid-template-columns: 300px 280px minmax(0, 1fr);
+  gap: 12px;
+  padding: 12px;
   align-items: start;
 }
 
@@ -95,12 +101,9 @@ select {
 }
 
 textarea {
-  min-height: 360px;
+  min-height: 420px;
   resize: vertical;
-  font-family: "Menlo", "Consolas", "Courier New", monospace;
-  white-space: pre;
-  line-height: 1.5;
-  tab-size: 2;
+  line-height: 1.6;
 }
 
 button,
@@ -139,19 +142,6 @@ button.primary:hover {
   background: #fff7ed;
 }
 
-.mode-switch {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-bottom: 16px;
-}
-
-.mode-switch button.active {
-  background: #222;
-  color: #fff;
-  border-color: #222;
-}
-
 .button-row {
   display: flex;
   gap: 8px;
@@ -178,75 +168,128 @@ button.primary:hover {
   display: none;
 }
 
-.block-card {
-  border: 1px solid #ddd;
-  background: #fafafa;
-  border-radius: 8px;
-  padding: 12px;
-  margin-bottom: 12px;
-}
-
-.block-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.block-card-title {
-  font-weight: 700;
-  font-size: 14px;
-}
-
-.block-card textarea {
-  min-height: 48px;
-  margin-bottom: 8px;
-}
-
-.block-card button {
-  padding: 6px 8px;
-  font-size: 12px;
-}
-
 .preview-wrapper {
   background: #e5e7eb;
   border-radius: 8px;
   padding: 16px;
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* 用紙は210mmのまま、この枠に収まる倍率で拡縮する（横スクロールを出さない） */
+.preview-stage {
+  position: relative;
+}
+
+/* 左上を基準に拡縮するので、中央寄せの余白は消しておく */
+.preview-stage > .print-area {
+  margin: 0;
+  transform-origin: top left;
 }
 
 .preview-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   margin-bottom: 12px;
 }
 
 .preview-toolbar h2 {
+  margin: 0 0 6px;
+}
+
+.preview-hint {
   margin: 0;
+  color: #555;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.preview-hint kbd {
+  display: inline-block;
+  border: 1px solid #bbb;
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  padding: 0 5px;
+  background: #fff;
+  font-size: 12px;
+  font-family: inherit;
 }
 
 .print-area {
   margin: 0 auto;
-  background: #ffffff;
   color: #111;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+/* 用紙1枚ずつに影を付けて、紙が分かれているのを見せる */
+.sheet-page {
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.14);
 }
 
 .print-area-a4 {
   width: 210mm;
-  min-height: 297mm;
 }
 
 .print-area-a3-2up {
   width: 420mm;
-  min-height: 297mm;
 }
 
-.sheet-copy {
+/* 1ページぶんの用紙。高さは固定で、はみ出す前に次のページへ送る */
+.sheet-page {
   width: 210mm;
-  min-height: 297mm;
+  height: var(--page-height);
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.sheet-page-inner {
+  height: 100%;
   padding: var(--page-margin);
+}
+
+.sheet-columns {
+  display: flex;
+  gap: var(--column-gap);
+  height: 100%;
+  align-items: flex-start;
+}
+
+.sheet-column {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 100%;
+}
+
+/* 2段のときは段の間に薄い罫を引く。
+   段幅を1pxもずらさないよう、枠線ではなく背景で描く
+   （幅が変わると、高さを測ったときと折り返し位置が変わってしまう）。 */
+.sheet-columns[data-columns="2"] {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1));
+  background-size: 1px 100%;
+  background-position: center top;
+  background-repeat: no-repeat;
+}
+
+/* 画面ではページごとに間を空けて、変わり目が見えるようにする */
+.page-slot + .page-slot,
+.two-up-page + .two-up-page {
+  margin-top: 26px;
+}
+
+.page-label {
+  padding: 4px 0 6px;
+  color: #4b5563;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.page-label span {
+  display: inline-block;
+  min-width: 18px;
+  padding: 1px 6px;
+  margin-right: 2px;
+  border-radius: 999px;
+  background: #374151;
+  color: #fff;
+  text-align: center;
 }
 
 .two-up-page {
@@ -254,13 +297,10 @@ button.primary:hover {
   display: grid;
   grid-template-columns: 210mm 210mm;
   width: 420mm;
-  min-height: 297mm;
 }
 
-.two-up-copy {
-  width: 210mm;
-  min-height: 297mm;
-  padding: var(--page-margin);
+.two-up-page .page-label {
+  grid-column: 1 / -1;
 }
 
 .cut-line {
@@ -278,42 +318,275 @@ button.primary:hover {
   font-weight: 700;
 }
 
+/* 高さを測るためだけの、画面に出ない組版 */
+.measure-layer {
+  position: absolute;
+  top: 0;
+  left: -20000px;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.sheet-break {
+  position: relative;
+  height: var(--block-gap);
+}
+
+.sheet-break::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  border-top: 1px dashed rgba(37, 99, 235, 0.35);
+}
+
+.break-remove {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 0;
+  width: 18px;
+  height: 18px;
+  line-height: 1;
+  font-size: 12px;
+  border-radius: 50%;
+  border-color: rgba(37, 99, 235, 0.4);
+  color: var(--accent);
+  background: #fff;
+  opacity: 0;
+}
+
+.sheet-break:hover .break-remove {
+  opacity: 1;
+}
+
+/* ------------------------------------------------------------------
+ * 譜面本体（1文字 = 1マス、コードはマスの上に載る）
+ * ---------------------------------------------------------------- */
+
 .song-block {
+  position: relative;
   margin-bottom: var(--block-gap);
   break-inside: avoid;
   page-break-inside: avoid;
 }
 
-.degree-line,
-.chord-line,
-.lyric-line {
-  font-family: "Menlo", "Consolas", "Courier New", monospace;
+.cs-line {
+  font-family: var(--sheet-font);
   font-size: var(--font-size);
   letter-spacing: var(--letter-spacing);
-  white-space: pre;
   line-height: 1.25;
 }
 
-.degree-line {
-  font-weight: 700;
-  color: #666;
+.cs-unit {
+  display: inline-block;
+  vertical-align: top;
+  position: relative;
+}
+
+.cs-unit > span {
+  display: block;
+  white-space: pre;
+}
+
+/* 度数とコードは、中身が無くても行の高さを保つ。
+   幅はコード名のほうが広ければマスごと広がるので、隣とぶつからない。 */
+.cs-deg {
+  height: calc(var(--font-size) * 0.85 * 1.25);
   font-size: calc(var(--font-size) * 0.85);
-  min-height: 1em;
-}
-
-.chord-line {
   font-weight: 700;
+  line-height: 1.25;
+  color: #666;
+}
+
+.cs-chord {
+  height: calc(var(--font-size) * 1.25);
+  font-weight: 700;
+  line-height: 1.25;
   margin-bottom: var(--chord-lyric-gap);
-  min-height: 1em;
+  border-radius: 3px;
+  cursor: pointer;
 }
 
-.lyric-line {
-  font-weight: 400;
-  min-height: 1em;
+.cs-deg:not(:empty),
+.cs-chord:not(:empty) {
+  padding-right: 0.5em;
 }
 
-.empty-line {
+.cs-chord.has-chord {
+  cursor: grab;
+}
+
+.cs-unit:hover > .cs-chord {
+  background: rgba(37, 99, 235, 0.12);
+}
+
+.cs-unit.is-active > .cs-chord {
+  background: rgba(37, 99, 235, 0.18);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+/* どの文字の上に置くのかが一目で分かるよう、対象の歌詞も光らせる */
+.cs-unit.is-active > .cs-lyric {
+  background: rgba(37, 99, 235, 0.16);
+  border-radius: 3px;
+}
+
+.cs-unit.is-drop-target > .cs-chord {
+  background: rgba(37, 99, 235, 0.28);
+}
+
+.cs-unit.is-pad > .cs-lyric {
   color: transparent;
+}
+
+/* 行末の空きマス。幅を持たないので、行の折り返し位置に影響しない */
+.cs-pad-wrap {
+  display: inline-block;
+  width: 0;
+  white-space: nowrap;
+}
+
+body.is-dragging-chord {
+  cursor: grabbing;
+  user-select: none;
+}
+
+.chord-drag-ghost {
+  position: fixed;
+  z-index: 100;
+  transform: translate(8px, -50%);
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+/* ------------------------------------------------------------------
+ * コード入力
+ * ---------------------------------------------------------------- */
+
+/* 歌詞に被らないよう、マスの真上に出す。
+   上に余白が無いときだけ .is-below で下に回す。 */
+.chord-editor {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 7px);
+  z-index: 40;
+  /* パレットが1行に収まる幅にして、背を低く保つ（上の行に被る量を減らす） */
+  width: 252px;
+  padding: 6px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  cursor: default;
+}
+
+.chord-editor.is-below {
+  bottom: auto;
+  top: calc(100% + 7px);
+}
+
+/* どのマスに入れようとしているかを指す小さな三角 */
+.chord-editor::after {
+  content: "";
+  position: absolute;
+  left: var(--arrow-x, 7px);
+  bottom: -6px;
+  border: 6px solid transparent;
+  border-bottom: 0;
+  border-top-color: #fff;
+  filter: drop-shadow(0 1px 0 #cbd5e1);
+}
+
+.chord-editor.is-below::after {
+  bottom: auto;
+  top: -6px;
+  border-top: 0;
+  border-bottom: 6px solid #fff;
+  filter: drop-shadow(0 -1px 0 #cbd5e1);
+}
+
+.chord-editor-row {
+  display: flex;
+  gap: 4px;
+}
+
+.chord-editor-input {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  padding: 5px 7px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.chord-editor-ok {
+  flex: none;
+  padding: 4px 9px;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 6px;
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.chord-editor-ok:hover {
+  background: #1d4ed8;
+}
+
+.chord-palette {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 3px;
+  margin-top: 5px;
+}
+
+.chord-palette-btn {
+  flex: none;
+  padding: 2px 5px;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 5px;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+/* 行間の帯。レイアウトを動かさないよう、ブロックの上の余白に重ねる */
+.break-insert {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(-1 * max(12px, var(--block-gap)));
+  height: max(12px, var(--block-gap));
+  padding: 0;
+  border: 0;
+  background: transparent;
+  opacity: 0;
+  font-size: 11px;
+  color: var(--accent);
+  z-index: 10;
+}
+
+.break-insert:hover {
+  opacity: 1;
+  background: transparent;
+}
+
+.break-insert span {
+  display: inline-block;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px dashed rgba(37, 99, 235, 0.6);
 }
 
 @media (max-width: 1100px) {
@@ -321,14 +594,9 @@ button.primary:hover {
     grid-template-columns: 1fr;
   }
 
-  .print-area-a4 {
+  .print-area-a4,
+  .print-area-a4 .sheet-page {
     width: 100%;
-    min-height: auto;
-  }
-
-  .print-area-a4 .sheet-copy {
-    width: 100%;
-    min-height: auto;
   }
 }
 
@@ -375,27 +643,64 @@ button.primary:hover {
     border-radius: 0;
   }
 
-  .print-area {
+  /* 画面用の拡縮は紙には持ち込まない */
+  .preview-stage,
+  .preview-stage > .print-area {
+    height: auto !important;
+    transform: none !important;
+  }
+
+  .print-area,
+  .sheet-page {
     margin: 0;
     box-shadow: none;
+  }
+
+  .print-area {
     overflow: visible;
   }
 
   .print-area-a4 {
     width: 210mm;
-    min-height: 297mm;
   }
 
-  .print-area-a3-2up,
+  .print-area-a3-2up {
+    width: 420mm;
+  }
+
   .two-up-page {
     width: 420mm;
-    min-height: 297mm;
+    height: var(--page-height);
+    overflow: hidden;
   }
 
-  .sheet-copy,
-  .two-up-copy {
+  /* ページ割りは計算済みなので、1枚ずつそのまま紙に送る */
+  .page-slot,
+  .two-up-page {
+    break-after: page;
+    page-break-after: always;
+    break-inside: avoid;
+    page-break-inside: avoid;
+    margin: 0;
+  }
+
+  /* 画面でページの間に空けている余白は紙に持ち込まない。
+     残っていると用紙が紙からはみ出して、空白のページが増える。 */
+  .page-slot + .page-slot,
+  .two-up-page + .two-up-page {
+    margin-top: 0;
+  }
+
+  .page-slot:last-child,
+  .two-up-page:last-child {
+    break-after: auto;
+    page-break-after: auto;
+  }
+
+  .sheet-page {
     width: 210mm;
-    min-height: 297mm;
+    height: var(--page-height);
+    overflow: hidden;
   }
 
   .song-block {
@@ -403,41 +708,42 @@ button.primary:hover {
     page-break-inside: avoid;
   }
 
-  .song-block:last-child {
-    margin-bottom: 0;
+  /* 画面用の当たり判定やハイライトは紙に出さない */
+  .cs-chord,
+  .cs-unit:hover > .cs-chord,
+  .cs-unit.is-active > .cs-chord {
+    background: none;
+    box-shadow: none;
+    cursor: auto;
   }
 
+  /* A3は複数枚になりうるので、高さを1枚ぶんに固定しない。
+     ここで height を決めたり break-after: avoid を付けたりすると、
+     用紙の間で改ページできなくなり、余りが白いページになる。 */
   body.print-layout-a3-landscape-2up .app-layout,
   body.print-layout-a3-landscape-2up .preview-wrapper {
     width: 420mm;
-    height: 296.5mm;
+    height: auto;
     min-height: 0;
     overflow: visible;
   }
 
-  body.print-layout-a3-landscape-2up .print-area-a3-2up,
-  body.print-layout-a3-landscape-2up .two-up-page {
+  body.print-layout-a3-landscape-2up .print-area-a3-2up {
     width: 420mm;
-    height: 296.5mm;
+    height: auto;
     min-height: 0;
     max-height: none;
     overflow: visible;
-    break-before: avoid;
-    break-after: avoid;
-    page-break-before: avoid;
-    page-break-after: avoid;
   }
 
   body.print-layout-a3-landscape-2up .two-up-copy {
     width: 210mm;
-    height: 296.5mm;
     min-height: 0;
-    overflow: visible;
   }
 
   body.print-layout-a3-landscape-2up .cut-line {
     top: 0;
     bottom: auto;
-    height: 296.5mm;
+    height: var(--page-height);
   }
 }
